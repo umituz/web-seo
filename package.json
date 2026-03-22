@@ -1,6 +1,6 @@
 {
   "name": "@umituz/web-seo",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Dynamic SEO and meta tag manager for React web applications",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
