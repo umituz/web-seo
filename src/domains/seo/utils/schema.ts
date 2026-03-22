@@ -15,7 +15,6 @@ import type {
   WebSiteJsonLd,
   PersonJsonLd,
   VideoJsonLd,
-  BreadcrumbItem,
   SchemaGeneratorOptions,
 } from "../types/schema.js";
 

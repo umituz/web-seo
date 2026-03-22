@@ -153,7 +153,7 @@ const discoverRoutesFromBuild = (outDir: string): string[] => {
           routes.add(basePath || "/");
         }
       });
-    } catch (error) {
+    } catch (_error) {
       // Directory doesn't exist or isn't accessible yet
     }
   };
@@ -189,7 +189,7 @@ export const viteSEOPlugin = (options: ViteSEOPluginOptions): Plugin => {
       (this as any).outDir = config.build.outDir;
     },
 
-    generateBundle(_: any, bundle: any) {
+    generateBundle(_input: any, _bundle: any) {
       const outDir = (this as any).outDir || "dist";
 
       // Collect routes
@@ -238,8 +238,6 @@ export const viteSEOPlugin = (options: ViteSEOPluginOptions): Plugin => {
     },
 
     closeBundle() {
-      const outDir = (this as any).outDir || "dist";
-
       // Log generated files
       console.log(`\n${"=".repeat(50)}`);
       console.log(`🚀 SEO files generated:`);

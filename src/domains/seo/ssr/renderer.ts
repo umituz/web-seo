@@ -8,80 +8,6 @@
 import type { SEOptions, JsonLdTypes } from "../types/index.js";
 
 // ============================================================================
-// Meta Tag Rendering
-// ============================================================================
-
-interface RenderedMetaTag {
-  toHTML(): string;
-  toString(): string;
-}
-
-class MetaTagRenderer implements RenderedMetaTag {
-  constructor(
-    private attrs: Record<string, string>,
-    private content?: string
-  ) {}
-
-  toHTML(): string {
-    const attrs = Object.entries(this.attrs)
-      .map(([key, value]) => `${key}="${value}"`)
-      .join(" ");
-
-    if (this.content !== undefined) {
-      return `<meta ${attrs} content="${this.content}" />`;
-    }
-
-    return `<meta ${attrs} />`;
-  }
-
-  toString(): string {
-    return this.toHTML();
-  }
-}
-
-// ============================================================================
-// Link Tag Rendering
-// ============================================================================
-
-class LinkTagRenderer implements RenderedMetaTag {
-  constructor(private attrs: Record<string, string>) {}
-
-  toHTML(): string {
-    const attrs = Object.entries(this.attrs)
-      .map(([key, value]) => `${key}="${value}"`)
-      .join(" ");
-
-    return `<link ${attrs} />`;
-  }
-
-  toString(): string {
-    return this.toHTML();
-  }
-}
-
-// ============================================================================
-// JSON-LD Script Rendering
-// ============================================================================
-
-class JsonLdRenderer implements RenderedMetaTag {
-  constructor(private data: JsonLdTypes | JsonLdTypes[]) {}
-
-  toHTML(): string {
-    const dataArray = Array.isArray(this.data) ? this.data : [this.data];
-    return dataArray
-      .map(
-        (data) =>
-          `<script type="application/ld+json">${JSON.stringify(data)}</script>`
-      )
-      .join("\n");
-  }
-
-  toString(): string {
-    return this.toHTML();
-  }
-}
-
-// ============================================================================
 // Main SEO Renderer
 // ============================================================================
 
@@ -121,9 +47,6 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
   if (options.description) {
     metaTags.push(`<meta name="description" content="${options.description}" />`);
   }
-
-  // Language
-  const langAttr = options.lang ? ` lang="${options.lang}"` : "";
 
   // Robots
   if (options.robots !== undefined) {
@@ -342,8 +265,8 @@ export const renderAsHelmet = (options: SEOptions): HelmetData => {
     base: [],
     bodyAttributes: {},
     htmlAttributes: options.lang ? { lang: options.lang } : {},
-    link: [], // TODO: Convert linkTags to LinkTagRenderer instances
-    meta: [], // TODO: Convert metaTags to MetaTagRenderer instances
+    link: [],
+    meta: [],
     noscript: [],
     script: [],
     style: [],

@@ -313,7 +313,7 @@ const setOpenGraph = (openGraph: SEOptions["openGraph"]) => {
 // Twitter Card (Enhanced)
 // ============================================================================
 
-const setTwitterCard = (twitter: SEOptions["twitter"], openGraphImage?: SEOptions["openGraph"]) => {
+const setTwitterCard = (twitter: SEOptions["twitter"], _openGraphImage?: SEOptions["openGraph"]) => {
   if (!twitter) return;
 
   const setTW = (name: string, content: string | undefined) => {
