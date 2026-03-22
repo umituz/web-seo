@@ -1,14 +1,15 @@
 {
   "name": "@umituz/web-seo",
-  "version": "1.0.5",
-  "description": "Dynamic SEO and meta tag manager for React web applications",
+  "version": "2.0.0",
+  "description": "Comprehensive SEO solution for React Vite applications with structured data, performance hints, and build-time optimization",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
     "build": "tsc",
     "lint": "eslint .",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "exports": {
     ".": "./dist/index.js",
@@ -18,6 +19,22 @@
     "dist",
     "README.md"
   ],
+  "keywords": [
+    "seo",
+    "meta tags",
+    "open graph",
+    "twitter cards",
+    "json-ld",
+    "structured data",
+    "schema.org",
+    "vite",
+    "react",
+    "ssr",
+    "performance",
+    "hreflang",
+    "sitemap",
+    "robots.txt"
+  ],
   "author": "umituz",
   "license": "MIT",
   "publishConfig": {
@@ -25,12 +42,20 @@
   },
   "peerDependencies": {
     "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "react-dom": ">=16.8.0",
+    "vite": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vite": {
+      "optional": true
+    }
   },
   "devDependencies": {
+    "@types/node": "^25.5.0",
     "@types/react": "^18.3.2",
     "@types/react-dom": "^18.3.0",
     "eslint": "^8.57.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vite": "^5.0.0"
   }
 }
