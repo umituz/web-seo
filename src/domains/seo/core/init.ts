@@ -19,7 +19,7 @@ export const initSEO = (config: SEOConfig) => {
   if (typeof window === "undefined") return;
 
   const update = () => {
-    const lang = config.i18n?.language?.split("-")[0] || "en";
+    const lang = config.i18n?.language ? config.i18n.language.split("-")[0] || "en" : "en";
     const title = config.i18n ? config.i18n.t(config.titleKey || "app.title") : document.title;
     const description = config.i18n ? config.i18n.t(config.descriptionKey || "app.description") : "";
     const canonical = config.canonicalPrefix ? `${config.canonicalPrefix}/${lang}` : undefined;

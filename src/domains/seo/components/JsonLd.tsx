@@ -59,7 +59,7 @@ export const JsonLd: React.FC<JsonLdProps> = ({ data, strategy = "afterInteracti
 
     // Cleanup function
     return () => {
-      dataArray.forEach((jsonData, _index) => {
+      dataArray.forEach((jsonData) => {
         const script = document.querySelector(
           `script[type="application/ld+json"][data-seo-id="${id || JSON.stringify(jsonData)}"]`
         );

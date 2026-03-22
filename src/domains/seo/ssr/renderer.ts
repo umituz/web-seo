@@ -8,6 +8,22 @@
 import type { SEOptions } from "../types/index.js";
 
 // ============================================================================
+// HTML Escaping (Security)
+// ============================================================================
+
+/**
+ * Escape HTML special characters to prevent XSS attacks
+ */
+const escapeHTML = (str: string): string => {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+};
+
+// ============================================================================
 // Main SEO Renderer
 // ============================================================================
 
@@ -36,8 +52,8 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
 
   // Title
   const title = options.titleTemplate
-    ? options.titleTemplate.replace("%s", options.title || "")
-    : options.title || "";
+    ? escapeHTML(options.titleTemplate.replace("%s", options.title || ""))
+    : escapeHTML(options.title || "");
 
   // Charset
   metaTags.push('<meta charset="utf-8" />');
@@ -45,7 +61,7 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
 
   // Description
   if (options.description) {
-    metaTags.push(`<meta name="description" content="${options.description}" />`);
+    metaTags.push(`<meta name="description" content="${escapeHTML(options.description)}" />`);
   }
 
   // Robots
@@ -68,39 +84,39 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
 
   // Canonical
   if (options.canonical) {
-    linkTags.push(`<link rel="canonical" href="${options.canonical}" />`);
+    linkTags.push(`<link rel="canonical" href="${escapeHTML(options.canonical)}" />`);
   }
 
   // Theme color
   if (options.themeColor) {
-    metaTags.push(`<meta name="theme-color" content="${options.themeColor}" />`);
+    metaTags.push(`<meta name="theme-color" content="${escapeHTML(options.themeColor)}" />`);
   }
 
   // Favicon
   if (options.favicon) {
-    linkTags.push(`<link rel="icon" type="image/x-icon" href="${options.favicon}" />`);
+    linkTags.push(`<link rel="icon" type="image/x-icon" href="${escapeHTML(options.favicon)}" />`);
   }
   if (options.appleTouchIcon) {
-    linkTags.push(`<link rel="apple-touch-icon" sizes="180x180" href="${options.appleTouchIcon}" />`);
+    linkTags.push(`<link rel="apple-touch-icon" sizes="180x180" href="${escapeHTML(options.appleTouchIcon)}" />`);
   }
   if (options.maskIcon) {
-    linkTags.push(`<link rel="mask-icon" href="${options.maskIcon}" />`);
+    linkTags.push(`<link rel="mask-icon" href="${escapeHTML(options.maskIcon)}" />`);
   }
 
   // Hreflang
   if (options.hreflang && options.hreflang.length > 0) {
     options.hreflang.forEach((entry) => {
-      linkTags.push(`<link rel="alternate" hreflang="${entry.lang}" href="${entry.url}" />`);
+      linkTags.push(`<link rel="alternate" hreflang="${escapeHTML(entry.lang)}" href="${escapeHTML(entry.url)}" />`);
     });
   }
 
   // Preload
   if (options.preload && options.preload.length > 0) {
     options.preload.forEach((preload) => {
-      const attrs = [`rel="preload"`, `href="${preload.href}"`, `as="${preload.as}"`];
-      if (preload.type) attrs.push(`type="${preload.type}"`);
-      if (preload.crossOrigin) attrs.push(`crossorigin="${preload.crossOrigin}"`);
-      if (preload.integrity) attrs.push(`integrity="${preload.integrity}"`);
+      const attrs = [`rel="preload"`, `href="${escapeHTML(preload.href)}"`, `as="${escapeHTML(preload.as)}"`];
+      if (preload.type) attrs.push(`type="${escapeHTML(preload.type)}"`);
+      if (preload.crossOrigin) attrs.push(`crossorigin="${escapeHTML(preload.crossOrigin)}"`);
+      if (preload.integrity) attrs.push(`integrity="${escapeHTML(preload.integrity)}"`);
       linkTags.push(`<link ${attrs.join(" ")} />`);
     });
   }
@@ -108,8 +124,8 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
   // Preconnect
   if (options.preconnect && options.preconnect.length > 0) {
     options.preconnect.forEach((origin) => {
-      const attrs = [`rel="preconnect"`, `href="${origin.href}"`];
-      if (origin.crossOrigin) attrs.push(`crossorigin="${origin.crossOrigin}"`);
+      const attrs = [`rel="preconnect"`, `href="${escapeHTML(origin.href)}"`];
+      if (origin.crossOrigin) attrs.push(`crossorigin="${escapeHTML(origin.crossOrigin)}"`);
       linkTags.push(`<link ${attrs.join(" ")} />`);
     });
   }
@@ -117,7 +133,7 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
   // DNS Prefetch
   if (options.dnsPrefetch && options.dnsPrefetch.length > 0) {
     options.dnsPrefetch.forEach((domain) => {
-      linkTags.push(`<link rel="dns-prefetch" href="${domain.href}" />`);
+      linkTags.push(`<link rel="dns-prefetch" href="${escapeHTML(domain.href)}" />`);
     });
   }
 
@@ -125,13 +141,13 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
   if (options.meta && options.meta.length > 0) {
     options.meta.forEach((m) => {
       if (m.name) {
-        metaTags.push(`<meta name="${m.name}" content="${m.content}" />`);
+        metaTags.push(`<meta name="${escapeHTML(m.name)}" content="${escapeHTML(m.content)}" />`);
       }
       if (m.property) {
-        metaTags.push(`<meta property="${m.property}" content="${m.content}" />`);
+        metaTags.push(`<meta property="${escapeHTML(m.property)}" content="${escapeHTML(m.content)}" />`);
       }
       if (m.httpEquiv) {
-        metaTags.push(`<meta http-equiv="${m.httpEquiv}" content="${m.content}" />`);
+        metaTags.push(`<meta http-equiv="${escapeHTML(m.httpEquiv)}" content="${escapeHTML(m.content)}" />`);
       }
     });
   }
@@ -139,47 +155,47 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
   // Custom link tags
   if (options.link && options.link.length > 0) {
     options.link.forEach((link) => {
-      const attrs = [`rel="${link.rel}"`, `href="${link.href}"`];
-      if (link.type) attrs.push(`type="${link.type}"`);
-      if (link.sizes) attrs.push(`sizes="${link.sizes}"`);
-      if (link.media) attrs.push(`media="${link.media}"`);
-      if (link.crossOrigin) attrs.push(`crossorigin="${link.crossOrigin}"`);
-      if (link.as) attrs.push(`as="${link.as}"`);
+      const attrs = [`rel="${escapeHTML(link.rel)}"`, `href="${escapeHTML(link.href)}"`];
+      if (link.type) attrs.push(`type="${escapeHTML(link.type)}"`);
+      if (link.sizes) attrs.push(`sizes="${escapeHTML(link.sizes)}"`);
+      if (link.media) attrs.push(`media="${escapeHTML(link.media)}"`);
+      if (link.crossOrigin) attrs.push(`crossorigin="${escapeHTML(link.crossOrigin)}"`);
+      if (link.as) attrs.push(`as="${escapeHTML(link.as)}"`);
       linkTags.push(`<link ${attrs.join(" ")} />`);
     });
   }
 
   // Open Graph
   if (options.openGraph) {
-    if (options.openGraph.title) metaTags.push(`<meta property="og:title" content="${options.openGraph.title}" />`);
-    if (options.openGraph.description) metaTags.push(`<meta property="og:description" content="${options.openGraph.description}" />`);
-    if (options.openGraph.url) metaTags.push(`<meta property="og:url" content="${options.openGraph.url}" />`);
-    if (options.openGraph.type) metaTags.push(`<meta property="og:type" content="${options.openGraph.type}" />`);
-    if (options.openGraph.siteName) metaTags.push(`<meta property="og:site_name" content="${options.openGraph.siteName}" />`);
-    if (options.openGraph.locale) metaTags.push(`<meta property="og:locale" content="${options.openGraph.locale}" />`);
+    if (options.openGraph.title) metaTags.push(`<meta property="og:title" content="${escapeHTML(options.openGraph.title)}" />`);
+    if (options.openGraph.description) metaTags.push(`<meta property="og:description" content="${escapeHTML(options.openGraph.description)}" />`);
+    if (options.openGraph.url) metaTags.push(`<meta property="og:url" content="${escapeHTML(options.openGraph.url)}" />`);
+    if (options.openGraph.type) metaTags.push(`<meta property="og:type" content="${escapeHTML(options.openGraph.type)}" />`);
+    if (options.openGraph.siteName) metaTags.push(`<meta property="og:site_name" content="${escapeHTML(options.openGraph.siteName)}" />`);
+    if (options.openGraph.locale) metaTags.push(`<meta property="og:locale" content="${escapeHTML(options.openGraph.locale)}" />`);
 
     // Images
     if (options.openGraph.image) {
       if (Array.isArray(options.openGraph.image)) {
         options.openGraph.image.forEach((img) => {
-          metaTags.push(`<meta property="og:image" content="${img.url}" />`);
-          if (img.alt) metaTags.push(`<meta property="og:image:alt" content="${img.alt}" />`);
+          metaTags.push(`<meta property="og:image" content="${escapeHTML(img.url)}" />`);
+          if (img.alt) metaTags.push(`<meta property="og:image:alt" content="${escapeHTML(img.alt)}" />`);
         });
       } else {
-        metaTags.push(`<meta property="og:image" content="${options.openGraph.image}" />`);
+        metaTags.push(`<meta property="og:image" content="${escapeHTML(options.openGraph.image)}" />`);
       }
     }
   }
 
   // Twitter Card
   if (options.twitter) {
-    if (options.twitter.cardType) metaTags.push(`<meta name="twitter:card" content="${options.twitter.cardType}" />`);
-    if (options.twitter.site) metaTags.push(`<meta name="twitter:site" content="${options.twitter.site}" />`);
-    if (options.twitter.handle) metaTags.push(`<meta name="twitter:creator" content="${options.twitter.handle}" />`);
-    if (options.twitter.title) metaTags.push(`<meta name="twitter:title" content="${options.twitter.title}" />`);
-    if (options.twitter.description) metaTags.push(`<meta name="twitter:description" content="${options.twitter.description}" />`);
-    if (options.twitter.image) metaTags.push(`<meta name="twitter:image" content="${options.twitter.image}" />`);
-    if (options.twitter.imageAlt) metaTags.push(`<meta name="twitter:image:alt" content="${options.twitter.imageAlt}" />`);
+    if (options.twitter.cardType) metaTags.push(`<meta name="twitter:card" content="${escapeHTML(options.twitter.cardType)}" />`);
+    if (options.twitter.site) metaTags.push(`<meta name="twitter:site" content="${escapeHTML(options.twitter.site)}" />`);
+    if (options.twitter.handle) metaTags.push(`<meta name="twitter:creator" content="${escapeHTML(options.twitter.handle)}" />`);
+    if (options.twitter.title) metaTags.push(`<meta name="twitter:title" content="${escapeHTML(options.twitter.title)}" />`);
+    if (options.twitter.description) metaTags.push(`<meta name="twitter:description" content="${escapeHTML(options.twitter.description)}" />`);
+    if (options.twitter.image) metaTags.push(`<meta name="twitter:image" content="${escapeHTML(options.twitter.image)}" />`);
+    if (options.twitter.imageAlt) metaTags.push(`<meta name="twitter:image:alt" content="${escapeHTML(options.twitter.imageAlt)}" />`);
   }
 
   // JSON-LD
@@ -212,7 +228,7 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
  */
 export const generateHead = (options: SEOptions): string => {
   const rendered = renderSEO(options);
-  return `  <head${options.lang ? ` lang="${options.lang}"` : ""}>
+  return `  <head${options.lang ? ` lang="${escapeHTML(options.lang)}"` : ""}>
 ${rendered.toHTML().split("\n").map(line => `  ${line}`).join("\n")}
   </head>`;
 };
@@ -226,11 +242,18 @@ export const extractSEOData = (options: SEOptions): string => {
 
 /**
  * Hydrate SEO on client side
+ * @throws {SyntaxError} If serializedData is not valid JSON
  */
 export const hydrateSEO = (serializedData: string): void => {
   if (typeof window === "undefined") return;
 
-  const options = JSON.parse(serializedData) as SEOptions;
+  let options: SEOptions;
+  try {
+    options = JSON.parse(serializedData) as SEOptions;
+  } catch (error) {
+    console.error("[SEO] Failed to hydrate SEO data:", error);
+    return;
+  }
 
   // Import updateSEO dynamically to avoid circular dependencies
   import("../utils/dom.js").then(({ updateSEO }) => {

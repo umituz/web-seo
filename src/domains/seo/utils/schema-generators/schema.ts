@@ -283,7 +283,7 @@ export const generateLocalBusinessSchema = (
     validateRequired(input.address, "address", strict);
   }
 
-  const schema: Record<string, unknown> = {
+  const schema: LocalBusinessJsonLd = {
     "@context": DEFAULT_CONTEXT,
     "@type": input.type || "LocalBusiness",
     name: input.name,
@@ -327,7 +327,7 @@ export const generateLocalBusinessSchema = (
     schema.sameAs = input.sameAs;
   }
 
-  return schema as unknown as LocalBusinessJsonLd;
+  return schema;
 };
 
 // ============================================================================

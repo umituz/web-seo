@@ -20,9 +20,14 @@ export const serializeSEO = (options: SEOptions): string => {
 
 /**
  * Deserialize SEO options from a string
+ * @throws {SyntaxError} If data is not valid JSON
  */
 export const deserializeSEO = (data: string): SEOptions => {
-  return JSON.parse(data);
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    throw new Error(`[SEO] Failed to deserialize SEO data: ${error instanceof Error ? error.message : "Unknown error"}`);
+  }
 };
 
 /**
@@ -33,8 +38,10 @@ export const serializeSEOToBase64 = (options: SEOptions): string => {
   if (typeof Buffer !== "undefined") {
     return Buffer.from(json).toString("base64");
   }
-  // Browser fallback
-  return btoa(json);
+  // Browser fallback with UTF-8 support
+  const utf8Bytes = new TextEncoder().encode(json);
+  const binaryString = Array.from(utf8Bytes, (byte) => String.fromCharCode(byte)).join("");
+  return btoa(binaryString);
 };
 
 /**
@@ -45,8 +52,13 @@ export const deserializeSEOFromBase64 = (base64: string): SEOptions => {
   if (typeof Buffer !== "undefined") {
     json = Buffer.from(base64, "base64").toString("utf-8");
   } else {
-    // Browser fallback
-    json = atob(base64);
+    // Browser fallback with UTF-8 support
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    json = new TextDecoder().decode(bytes);
   }
   return deserializeSEO(json);
 };
@@ -79,9 +91,14 @@ export const serializeSEOState = (state: SEOState): string => {
 
 /**
  * Deserialize SEO state
+ * @throws {SyntaxError} If data is not valid JSON
  */
 export const deserializeSEOState = (data: string): SEOState => {
-  return JSON.parse(data);
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    throw new Error(`[SEO] Failed to deserialize SEO state: ${error instanceof Error ? error.message : "Unknown error"}`);
+  }
 };
 
 /**
