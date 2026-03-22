@@ -153,7 +153,7 @@ const discoverRoutesFromBuild = (outDir: string): string[] => {
           routes.add(basePath || "/");
         }
       });
-    } catch (_error) {
+    } catch {
       // Directory doesn't exist or isn't accessible yet
     }
   };
@@ -179,18 +179,24 @@ export const viteSEOPlugin = (options: ViteSEOPluginOptions): Plugin => {
   const sitemapFilename = sitemapOptions.filename || "sitemap.xml";
   const robotsFilename = robotsOptions.filename || "robots.txt";
 
+  // Store plugin state
+  const pluginState: {
+    publicDir?: string;
+    outDir?: string;
+  } = {};
+
   return {
     name: "vite-plugin-seo",
     enforce: "post",
 
     configResolved(config: ResolvedConfig) {
       // Store resolved config for later use
-      (this as any).publicDir = config.publicDir;
-      (this as any).outDir = config.build.outDir;
+      pluginState.publicDir = config.publicDir;
+      pluginState.outDir = config.build.outDir;
     },
 
-    generateBundle(_input: any, _bundle: any) {
-      const outDir = (this as any).outDir || "dist";
+    generateBundle(_input: unknown, _bundle: unknown) {
+      const outDir = pluginState.outDir || "dist";
 
       // Collect routes
       let routes = [...manualRoutes];

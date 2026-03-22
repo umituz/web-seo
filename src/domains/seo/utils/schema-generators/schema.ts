@@ -16,7 +16,7 @@ import type {
   PersonJsonLd,
   VideoJsonLd,
   SchemaGeneratorOptions,
-} from "../types/schema.js";
+} from "../../types/schema.js";
 
 const DEFAULT_CONTEXT = "https://schema.org";
 
@@ -24,7 +24,7 @@ const DEFAULT_CONTEXT = "https://schema.org";
 // Validation Helpers
 // ============================================================================
 
-const validateRequired = (value: any, fieldName: string, strict = false) => {
+const validateRequired = (value: unknown, fieldName: string, strict = false) => {
   if (!value) {
     const message = `[SEO] Schema validation: Required field "${fieldName}" is missing or empty`;
     if (strict) {
@@ -283,7 +283,7 @@ export const generateLocalBusinessSchema = (
     validateRequired(input.address, "address", strict);
   }
 
-  const schema: any = {
+  const schema: Record<string, unknown> = {
     "@context": DEFAULT_CONTEXT,
     "@type": input.type || "LocalBusiness",
     name: input.name,
@@ -327,7 +327,7 @@ export const generateLocalBusinessSchema = (
     schema.sameAs = input.sameAs;
   }
 
-  return schema as LocalBusinessJsonLd;
+  return schema as unknown as LocalBusinessJsonLd;
 };
 
 // ============================================================================

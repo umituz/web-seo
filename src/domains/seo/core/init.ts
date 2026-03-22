@@ -1,7 +1,13 @@
 import { updateSEO } from "../utils/dom.js";
 
+interface I18nInstance {
+  language?: string;
+  t: (key: string) => string;
+  on: (event: string, callback: () => void) => void;
+}
+
 interface SEOConfig {
-  i18n?: any; // The i18next instance
+  i18n?: I18nInstance;
   titleKey?: string;
   descriptionKey?: string;
   defaultImage?: string;

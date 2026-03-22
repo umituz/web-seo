@@ -5,7 +5,7 @@
  * Helps catch common SEO issues before they affect search rankings.
  */
 
-import type { SEOptions, SEOValidationResult, JsonLdTypes } from "../types/index.js";
+import type { SEOptions, SEOValidationResult, JsonLdTypes } from "../../types/index.js";
 
 // ============================================================================
 // URL Validation
@@ -163,7 +163,7 @@ export const validateJsonLd = (jsonLd: JsonLdTypes): string[] => {
     case "Article":
     case "NewsArticle":
     case "BlogPosting": {
-      const article = jsonLd as any;
+      const article = jsonLd as unknown as Record<string, unknown>;
       if (!article.headline) errors.push("Article must have a headline");
       if (!article.image) errors.push("Article must have an image");
       if (!article.datePublished) errors.push("Article must have datePublished");
@@ -173,36 +173,36 @@ export const validateJsonLd = (jsonLd: JsonLdTypes): string[] => {
     }
 
     case "Product": {
-      const product = jsonLd as any;
+      const product = jsonLd as unknown as Record<string, unknown>;
       if (!product.name) errors.push("Product must have a name");
       if (!product.offers) errors.push("Product must have offers");
       break;
     }
 
     case "Organization": {
-      const org = jsonLd as any;
+      const org = jsonLd as unknown as Record<string, unknown>;
       if (!org.name) errors.push("Organization must have a name");
       break;
     }
 
     case "BreadcrumbList": {
-      const breadcrumb = jsonLd as any;
-      if (!breadcrumb.itemListElement || breadcrumb.itemListElement.length === 0) {
+      const breadcrumb = jsonLd as unknown as Record<string, unknown>;
+      if (!breadcrumb.itemListElement || (Array.isArray(breadcrumb.itemListElement) && breadcrumb.itemListElement.length === 0)) {
         errors.push("BreadcrumbList must have itemListElement");
       }
       break;
     }
 
     case "FAQPage": {
-      const faq = jsonLd as any;
-      if (!faq.mainEntity || faq.mainEntity.length === 0) {
+      const faq = jsonLd as unknown as Record<string, unknown>;
+      if (!faq.mainEntity || (Array.isArray(faq.mainEntity) && faq.mainEntity.length === 0)) {
         errors.push("FAQPage must have mainEntity");
       }
       break;
     }
 
     case "VideoObject": {
-      const video = jsonLd as any;
+      const video = jsonLd as unknown as Record<string, unknown>;
       if (!video.name) errors.push("Video must have a name");
       if (!video.thumbnailUrl) errors.push("Video must have thumbnailUrl");
       if (!video.uploadDate) errors.push("Video must have uploadDate");

@@ -5,7 +5,7 @@
  * Generates HTML strings for meta tags and structured data.
  */
 
-import type { SEOptions, JsonLdTypes } from "../types/index.js";
+import type { SEOptions } from "../types/index.js";
 
 // ============================================================================
 // Main SEO Renderer
@@ -241,6 +241,11 @@ export const hydrateSEO = (serializedData: string): void => {
 // ============================================================================
 // Helmet-like API for compatibility
 // ============================================================================
+
+export interface RenderedMetaTag {
+  toString(): string;
+  toComponent(): unknown;
+}
 
 export interface HelmetData {
   base: RenderedMetaTag[];

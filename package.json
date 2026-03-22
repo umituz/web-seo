@@ -1,10 +1,11 @@
 {
   "name": "@umituz/web-seo",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Comprehensive SEO solution for React Vite applications with structured data, performance hints, and build-time optimization",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "build": "tsc",
     "lint": "eslint .",
@@ -12,8 +13,28 @@
     "prepublishOnly": "npm run build"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./package.json": "./package.json"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json",
+    "./components": {
+      "types": "./dist/domains/seo/components/index.d.ts",
+      "import": "./dist/domains/seo/components/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/domains/seo/hooks/index.d.ts",
+      "import": "./dist/domains/seo/hooks/index.js"
+    },
+    "./utils": {
+      "types": "./dist/domains/seo/utils/index.d.ts",
+      "import": "./dist/domains/seo/utils/index.js"
+    },
+    "./vite": {
+      "types": "./dist/domains/seo/vite/index.d.ts",
+      "import": "./dist/domains/seo/vite/index.js"
+    }
   },
   "files": [
     "dist",

@@ -100,7 +100,7 @@ export const isSEOStateStale = (state: SEOState, maxAge: number = 3600000): bool
  * Removes undefined values and empty arrays
  */
 export const compressSEO = (options: SEOptions): SEOptions => {
-  const compressed: any = {};
+  const compressed: Record<string, unknown> = {};
 
   Object.entries(options).forEach(([key, value]) => {
     if (value === undefined || (Array.isArray(value) && value.length === 0)) {
@@ -109,7 +109,7 @@ export const compressSEO = (options: SEOptions): SEOptions => {
 
     // Compress nested objects
     if (typeof value === "object" && !Array.isArray(value)) {
-      const compressedNested = compressSEO(value as any);
+      const compressedNested = compressSEO(value as SEOptions);
       if (Object.keys(compressedNested).length > 0) {
         compressed[key] = compressedNested;
       }

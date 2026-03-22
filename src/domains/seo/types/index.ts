@@ -271,7 +271,11 @@ export interface SEOConfig {
   appleTouchIcon?: string;
 
   // i18n
-  i18n?: any;
+  i18n?: {
+    language?: string;
+    t: (key: string) => string;
+    on: (event: string, callback: () => void) => void;
+  };
   defaultLanguage?: string;
 
   // Robots
