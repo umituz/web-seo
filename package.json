@@ -1,6 +1,6 @@
 {
   "name": "@umituz/web-seo",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "Comprehensive SEO solution for React Vite applications with structured data, performance hints, and build-time optimization",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
