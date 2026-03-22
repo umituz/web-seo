@@ -1,0 +1,273 @@
+# ============================================================================
+# Dependencies
+# ============================================================================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ============================================================================
+# Build outputs
+# ============================================================================
+
+dist/
+build/
+out/
+*.tsbuildinfo
+
+# ============================================================================
+# Testing
+# ============================================================================
+
+coverage/
+.nyc_output/
+*.lcov
+
+# ============================================================================
+# Environment files
+# ============================================================================
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# ============================================================================
+# IDE & Editor
+# ============================================================================
+
+# VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# IntelliJ IDEA / WebStorm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+.\#*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# ============================================================================
+# Logs
+# ============================================================================
+
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+pnpm-debug.log*
+
+# ============================================================================
+# OS generated files
+# ============================================================================
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ============================================================================
+# Package manager locks
+# ============================================================================
+
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# ============================================================================
+# Expo / React Native / Mobile
+# ============================================================================
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+
+# Expo Router
+.expo-router/
+
+# React Native
+ios/
+android/
+*.ipa
+*.apk
+*.app
+
+# CocoaPods
+ios/Pods/
+ios/Podfile.lock
+
+# Gradle
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+
+# Fastlane
+fastlane/report/
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Bundle artifacts
+*.jsbundle
+
+# Ruby / CocoaPods
+/vendor/bundle/
+
+# ============================================================================
+# TypeScript
+# ============================================================================
+
+*.tsbuildinfo
+
+# ============================================================================
+# Misc
+# ============================================================================
+
+.cache/
+.parcel-cache/
+.next/
+out/
+.nuxt/
+.cache/
+.vite/
+.temp/
+*.tgz
+
+# ESLint cache
+.eslintcache
+
+# Prettier cache
+.prettiercache
+
+# Stylelint cache
+.stylelintcache
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
+
+# TernJS port file
+.tern-port
+
+# Stores VSCode versions used for testing VSCode extensions
+.vscode-test/
+
+# Temporary folders
+tmp/
+temp/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ============================================================================
+# Security / Secrets
+# ============================================================================*
+
+*.pem
+*.key
+*.cert
+*.crt
+.secrets/
+.envrc
+
+# ============================================================================
+# Build artifacts (additional)
+# ============================================================================
+
+*.tgz
+*.tar.gz
+
+# ============================================================================
+# Documentation
+# ============================================================================
+
+# Jekyll
+_site/
+.sass-cache/
+.jekyll-cache/
+.jekyll-metadata
+
+# ============================================================================
+# CI/CD
+# ============================================================================
+
+# GitHub
+.github/workflows/*.log
+
+# ============================================================================
+# Testing artifacts
+# ============================================================================
+
+test-results/
+playwright-report/
+playwright/.cache/
