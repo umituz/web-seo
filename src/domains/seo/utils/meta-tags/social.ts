@@ -95,7 +95,7 @@ export const setOpenGraph = (openGraph: SEOptions["openGraph"]) => {
  */
 export const setTwitterCard = (
   twitter: SEOptions["twitter"],
-  __openGraphImage?: SEOptions["openGraph"]
+  _openGraph?: SEOptions["openGraph"]
 ) => {
   if (!twitter) return;
 

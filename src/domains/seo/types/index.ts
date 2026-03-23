@@ -227,10 +227,6 @@ export interface SEOptions {
 
   // Viewport
   viewport?: string;
-
-  // Additional
-  additionalMetaTags?: MetaTag[];
-  additionalLinkTags?: LinkTag[];
 }
 
 // ============================================================================

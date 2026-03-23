@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import type { SEOptions } from "../types/index.js";
 import { updateSEO } from "../utils/dom.js";
 
-export const SEO: React.FC<SEOptions> = (props) => {
+export const SEO = (props: SEOptions) => {
   // Memoize dependencies for better performance
   const dependencies = useMemo(() => [
     props.title,

@@ -4,6 +4,7 @@ interface I18nInstance {
   language?: string;
   t: (key: string) => string;
   on: (event: string, callback: () => void) => void;
+  off?: (event: string, callback: () => void) => void;
 }
 
 interface SEOConfig {
@@ -15,11 +16,11 @@ interface SEOConfig {
   twitterHandle?: string;
 }
 
-export const initSEO = (config: SEOConfig) => {
-  if (typeof window === "undefined") return;
+export const initSEO = (config: SEOConfig): (() => void) => {
+  if (typeof window === "undefined") return () => {};
 
   const update = () => {
-    const lang = config.i18n?.language ? config.i18n.language.split("-")[0] || "en" : "en";
+    const lang = config.i18n?.language ? config.i18n.language.split("-")[0] : "en";
     const title = config.i18n ? config.i18n.t(config.titleKey || "app.title") : document.title;
     const description = config.i18n ? config.i18n.t(config.descriptionKey || "app.description") : "";
     const canonical = config.canonicalPrefix ? `${config.canonicalPrefix}/${lang}` : undefined;
@@ -50,4 +51,11 @@ export const initSEO = (config: SEOConfig) => {
   if (config.i18n && typeof config.i18n.on === "function") {
     config.i18n.on("languageChanged", update);
   }
+
+  // Return cleanup function
+  return () => {
+    if (config.i18n && typeof config.i18n.off === "function") {
+      config.i18n.off("languageChanged", update);
+    }
+  };
 };

@@ -23,6 +23,15 @@ const escapeHTML = (str: string): string => {
     .replace(/'/g, "&#39;");
 };
 
+/**
+ * Escape JSON content for safe inclusion in HTML script tags
+ * Prevents script breakage from </script> sequences in JSON data
+ */
+const escapeJSONForScript = (json: string): string => {
+  // Replace </script> with <\/script> to prevent breaking out of script tag
+  return json.replace(/<\/script>/gi, "<\\/script>");
+};
+
 // ============================================================================
 // Main SEO Renderer
 // ============================================================================
@@ -201,7 +210,9 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
   // JSON-LD
   if (options.jsonLd && options.jsonLd.length > 0) {
     options.jsonLd.forEach((data) => {
-      jsonLdScripts.push(`<script type="application/ld+json">${JSON.stringify(data)}</script>`);
+      const json = JSON.stringify(data);
+      const safeJson = escapeJSONForScript(json);
+      jsonLdScripts.push(`<script type="application/ld+json">${safeJson}</script>`);
     });
   }
 
@@ -256,9 +267,13 @@ export const hydrateSEO = (serializedData: string): void => {
   }
 
   // Import updateSEO dynamically to avoid circular dependencies
-  import("../utils/dom.js").then(({ updateSEO }) => {
-    updateSEO(options);
-  });
+  import("../utils/dom.js")
+    .then(({ updateSEO }) => {
+      updateSEO(options);
+    })
+    .catch((error) => {
+      console.error("[SEO] Failed to load updateSEO:", error);
+    });
 };
 
 // ============================================================================

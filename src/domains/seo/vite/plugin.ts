@@ -46,6 +46,8 @@ export interface ViteSEOPluginOptions {
     /** Crawl delay */
     crawlDelay?: number;
   };
+  /** Suppress console output */
+  silent?: boolean;
 }
 
 // ============================================================================
@@ -153,8 +155,11 @@ const discoverRoutesFromBuild = (outDir: string): string[] => {
           routes.add(basePath || "/");
         }
       });
-    } catch {
-      // Directory doesn't exist or isn't accessible yet
+    } catch (error) {
+      // Directory doesn't exist or isn't accessible yet - silently skip
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        console.warn(`[vite-plugin-seo] Warning: Could not traverse directory ${dir}:`, error);
+      }
     }
   };
 
@@ -174,6 +179,7 @@ export const viteSEOPlugin = (options: ViteSEOPluginOptions): Plugin => {
     discoverRoutes = false,
     sitemap: sitemapOptions = {},
     robotsTxt: robotsOptions = {},
+    silent = false,
   } = options;
 
   const sitemapFilename = sitemapOptions.filename || "sitemap.xml";
@@ -245,11 +251,13 @@ export const viteSEOPlugin = (options: ViteSEOPluginOptions): Plugin => {
 
     closeBundle() {
       // Log generated files
-      console.log(`\n${"=".repeat(50)}`);
-      console.log(`🚀 SEO files generated:`);
-      console.log(`   📄 ${sitemapFilename}`);
-      console.log(`   🤖 ${robotsFilename}`);
-      console.log(`${"=".repeat(50)}\n`);
+      if (!silent) {
+        console.log(`\n${"=".repeat(50)}`);
+        console.log(`🚀 SEO files generated:`);
+        console.log(`   📄 ${sitemapFilename}`);
+        console.log(`   🤖 ${robotsFilename}`);
+        console.log(`${"=".repeat(50)}\n`);
+      }
     },
   };
 };

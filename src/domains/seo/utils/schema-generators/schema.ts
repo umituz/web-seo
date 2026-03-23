@@ -30,9 +30,7 @@ const validateRequired = (value: unknown, fieldName: string, strict = false) => 
     if (strict) {
       throw new Error(message);
     }
-    if (typeof console !== "undefined" && console.warn) {
-      console.warn(message);
-    }
+    console.warn(message);
     return false;
   }
   return true;

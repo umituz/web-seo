@@ -155,27 +155,6 @@ export const updateSEO = (options: SEOptions) => {
 
   // Twitter Card
   setTwitterCard(options.twitter, options.openGraph);
-
-  // Additional Meta Tags (backward compatibility)
-  if (options.additionalMetaTags && Array.isArray(options.additionalMetaTags)) {
-    options.additionalMetaTags.forEach((m) => {
-      if (m.name) setMetaTag("name", m.name, m.content);
-      if (m.property) setMetaTag("property", m.property, m.content);
-    });
-  }
-
-  // Additional Link Tags (backward compatibility)
-  if (options.additionalLinkTags && Array.isArray(options.additionalLinkTags)) {
-    options.additionalLinkTags.forEach((link) => {
-      const attrs: Record<string, string> = { rel: link.rel, href: link.href };
-      if (link.type) attrs.type = link.type;
-      if (link.sizes) attrs.sizes = link.sizes;
-      if (link.media) attrs.media = link.media;
-      if (link.crossOrigin) attrs.crossorigin = link.crossOrigin;
-      if (link.as) attrs.as = link.as;
-      setLinkTag(attrs);
-    });
-  }
 };
 
 /**

@@ -135,7 +135,7 @@ export const compressSEO = (options: SEOptions): SEOptions => {
     }
   });
 
-  return compressed;
+  return compressed as SEOptions;
 };
 
 /**

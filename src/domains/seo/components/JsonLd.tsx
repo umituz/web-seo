@@ -5,7 +5,7 @@
  * Supports all Schema.org types with automatic validation.
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import type { JsonLdTypes } from "../types/schema.js";
 
 interface JsonLdProps {
@@ -16,8 +16,26 @@ interface JsonLdProps {
   id?: string;
 }
 
-export const JsonLd: React.FC<JsonLdProps> = ({ data, strategy = "afterInteractive", id }) => {
+// Generate a stable hash from JSON-LD data for consistent identification
+const generateDataId = (data: JsonLdTypes): string => {
+  const str = JSON.stringify(data);
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return `jsonld-${Math.abs(hash).toString(36)}`;
+};
+
+export const JsonLd = ({ data, strategy = "afterInteractive", id }: JsonLdProps) => {
   const scriptRef = useRef<HTMLScriptElement | null>(null);
+
+  // Generate stable IDs for data items
+  const dataIds = useMemo(() => {
+    const dataArray = Array.isArray(data) ? data : [data];
+    return dataArray.map((item) => id ? `${id}-${dataArray.indexOf(item)}` : generateDataId(item));
+  }, [data, id]);
 
   useEffect(() => {
     if (typeof document === "undefined") return;
@@ -25,10 +43,10 @@ export const JsonLd: React.FC<JsonLdProps> = ({ data, strategy = "afterInteracti
     // Convert single object to array for uniform handling
     const dataArray = Array.isArray(data) ? data : [data];
 
-    // Remove existing scripts with the same data to avoid duplicates
-    dataArray.forEach((jsonData) => {
+    // Remove existing scripts with matching IDs
+    dataIds.forEach((dataId) => {
       const existingScript = document.querySelector(
-        `script[type="application/ld+json"][data-seo-id="${id || JSON.stringify(jsonData)}"]`
+        `script[type="application/ld+json"][data-seo-id="${dataId}"]`
       );
       if (existingScript) {
         existingScript.remove();
@@ -42,12 +60,7 @@ export const JsonLd: React.FC<JsonLdProps> = ({ data, strategy = "afterInteracti
       script.textContent = JSON.stringify(jsonData);
 
       // Add identifier for duplicate detection and debugging
-      if (id) {
-        script.setAttribute("data-seo-id", `${id}-${index}`);
-      } else {
-        script.setAttribute("data-seo-id", JSON.stringify(jsonData));
-      }
-
+      script.setAttribute("data-seo-id", dataIds[index]);
       script.setAttribute("data-seo-strategy", strategy);
 
       document.head.appendChild(script);
@@ -59,16 +72,16 @@ export const JsonLd: React.FC<JsonLdProps> = ({ data, strategy = "afterInteracti
 
     // Cleanup function
     return () => {
-      dataArray.forEach((jsonData) => {
+      dataIds.forEach((dataId) => {
         const script = document.querySelector(
-          `script[type="application/ld+json"][data-seo-id="${id || JSON.stringify(jsonData)}"]`
+          `script[type="application/ld+json"][data-seo-id="${dataId}"]`
         );
         if (script) {
           script.remove();
         }
       });
     };
-  }, [data, strategy, id]);
+  }, [data, strategy, dataIds]);
 
   return null;
 };

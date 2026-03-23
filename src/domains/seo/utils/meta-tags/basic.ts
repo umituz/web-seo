@@ -20,6 +20,7 @@ export const setMetaTag = (
   if (!element) {
     element = document.createElement("meta");
     element.setAttribute(attrName, attrValue);
+    element.setAttribute("data-seo", "true");
     document.head.appendChild(element);
   }
 
@@ -46,11 +47,14 @@ export const setLinkTag = (attrs: Record<string, string>) => {
   let element = document.querySelector(selector);
   if (!element) {
     element = document.createElement("link");
+    element.setAttribute("data-seo", "true");
     document.head.appendChild(element);
   }
 
   Object.entries(attrs).forEach(([key, value]) => {
-    element!.setAttribute(key, value);
+    if (element) {
+      element.setAttribute(key, value);
+    }
   });
 };
 

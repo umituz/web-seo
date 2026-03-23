@@ -55,11 +55,8 @@ export {
   safeDeserializeSEO,
 } from "./domains/seo/ssr/serializer.js";
 
-// Vite Plugin
-export {
-  viteSEOPlugin,
-  quickSEOSetup,
-} from "./domains/seo/vite/plugin.js";
+// Vite Plugin - NOT exported from main entry to avoid Node.js dependencies in browser
+// Use: import { viteSEOPlugin } from "@umituz/web-seo/vite" instead
 
 // Types
 export type {
