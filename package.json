@@ -1,6 +1,6 @@
 {
   "name": "@umituz/web-seo",
-  "version": "2.0.17",
+  "version": "2.0.18",
   "description": "Comprehensive SEO solution for React Vite applications with structured data, performance hints, and build-time optimization",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -58,6 +58,14 @@
   ],
   "author": "umituz",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/umituz/web-seo"
+  },
+  "bugs": {
+    "url": "https://github.com/umituz/web-seo/issues"
+  },
+  "homepage": "https://github.com/umituz/web-seo#readme",
   "publishConfig": {
     "access": "public"
   },
