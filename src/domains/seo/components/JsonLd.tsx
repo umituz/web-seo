@@ -5,7 +5,7 @@
  * Supports all Schema.org types with automatic validation.
  */
 
-import { useEffect, useRef, useMemo } from "react";
+import { useEffect, useRef, useMemo, memo } from "react";
 import type { JsonLdTypes } from "../types/schema.js";
 
 interface JsonLdProps {
@@ -16,19 +16,55 @@ interface JsonLdProps {
   id?: string;
 }
 
-// Generate a stable hash from JSON-LD data for consistent identification
+// Optimized hash generation with caching using cyrb53 algorithm
+const hashCache = new WeakMap<JsonLdTypes, string>();
+
 const generateDataId = (data: JsonLdTypes): string => {
-  const str = JSON.stringify(data);
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
+  // Check cache first for better performance
+  if (hashCache.has(data)) {
+    return hashCache.get(data)!;
   }
-  return `jsonld-${Math.abs(hash).toString(36)}`;
+
+  // Use optimized hashing using cyrb53 algorithm (better distribution & performance)
+  const str = JSON.stringify(data);
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0, ch; i < str.length; i++) {
+    ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+  const hash = (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  const result = `jsonld-${hash}`;
+
+  // Cache the result for future use
+  hashCache.set(data, result);
+
+  return result;
 };
 
-export const JsonLd = ({ data, strategy = "afterInteractive", id }: JsonLdProps) => {
+/**
+ * Deep comparison for JSON-LD data
+ */
+const deepEqual = (a: JsonLdTypes | JsonLdTypes[], b: JsonLdTypes | JsonLdTypes[]): boolean => {
+  // Handle arrays
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    return a.every((item, index) => deepEqual(item, b[index]));
+  }
+
+  // Handle single objects
+  if (!Array.isArray(a) && !Array.isArray(b)) {
+    return JSON.stringify(a) === JSON.stringify(b);
+  }
+
+  return false;
+};
+
+const JsonLdComponent = ({ data, strategy = "afterInteractive", id }: JsonLdProps) => {
   const scriptRef = useRef<HTMLScriptElement | null>(null);
 
   // Generate stable IDs for data items
@@ -85,5 +121,14 @@ export const JsonLd = ({ data, strategy = "afterInteractive", id }: JsonLdProps)
 
   return null;
 };
+
+// Memoize component with custom comparison to prevent unnecessary re-renders
+export const JsonLd = memo(JsonLdComponent, (prevProps, nextProps) => {
+  return (
+    prevProps.strategy === nextProps.strategy &&
+    prevProps.id === nextProps.id &&
+    deepEqual(prevProps.data, nextProps.data)
+  );
+});
 
 export default JsonLd;

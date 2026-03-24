@@ -1,52 +1,54 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useRef, memo } from "react";
 import type { SEOptions } from "../types/index.js";
 import { updateSEO } from "../utils/dom.js";
 
-export const SEO = (props: SEOptions) => {
-  // Memoize dependencies for better performance
-  const dependencies = useMemo(() => [
-    props.title,
-    props.description,
-    props.lang,
-    props.canonical,
-    props.themeColor,
-    props.favicon,
-    JSON.stringify(props.meta),
-    JSON.stringify(props.link),
-    JSON.stringify(props.openGraph),
-    JSON.stringify(props.twitter),
-    JSON.stringify(props.jsonLd),
-    JSON.stringify(props.hreflang),
-    JSON.stringify(props.preload),
-    JSON.stringify(props.preconnect),
-    JSON.stringify(props.dnsPrefetch),
-    JSON.stringify(props.robots),
-    JSON.stringify(props.breadcrumbs),
-    props.viewport,
-  ], [
-    props.title,
-    props.description,
-    props.lang,
-    props.canonical,
-    props.themeColor,
-    props.favicon,
-    props.meta,
-    props.link,
-    props.openGraph,
-    props.twitter,
-    props.jsonLd,
-    props.hreflang,
-    props.preload,
-    props.preconnect,
-    props.dnsPrefetch,
-    props.robots,
-    props.breadcrumbs,
-    props.viewport,
-  ]);
+/**
+ * Deep comparison function for objects and arrays
+ * Performs efficient structural equality check
+ */
+const deepEqual = (a: unknown, b: unknown): boolean => {
+  // Primitive values and same reference
+  if (a === b) return true;
+
+  // Handle null/undefined
+  if (a == null || b == null) return a === b;
+
+  // Handle arrays
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    return a.every((item, index) => deepEqual(item, b[index]));
+  }
+
+  // Handle objects
+  if (typeof a === 'object' && typeof b === 'object' && a !== null && b !== null) {
+    const keysA = Object.keys(a as Record<string, unknown>);
+    const keysB = Object.keys(b as Record<string, unknown>);
+
+    if (keysA.length !== keysB.length) return false;
+
+    return keysA.every(key =>
+      keysB.includes(key) && deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])
+    );
+  }
+
+  return false;
+};
+
+const SEOComponent = (props: SEOptions) => {
+  const prevPropsRef = useRef<SEOptions | null>(null);
 
   useEffect(() => {
-    updateSEO(props);
-  }, dependencies);
+    // Only update if props have actually changed using deep comparison
+    if (!prevPropsRef.current || !deepEqual(prevPropsRef.current, props)) {
+      prevPropsRef.current = props;
+      updateSEO(props);
+    }
+  }, [props]);
 
   return null; // Component does not render anything
 };
+
+// Memoize component with custom comparison to prevent unnecessary re-renders
+export const SEO = memo(SEOComponent, (prevProps, nextProps) => {
+  return deepEqual(prevProps, nextProps);
+});

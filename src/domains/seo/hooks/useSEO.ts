@@ -1,50 +1,48 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useRef } from "react";
 import type { SEOptions } from "../types/index.js";
 import { updateSEO } from "../utils/dom.js";
 
+/**
+ * Deep comparison function for objects and arrays
+ * Performs efficient structural equality check
+ */
+const deepEqual = (a: unknown, b: unknown): boolean => {
+  // Primitive values and same reference
+  if (a === b) return true;
+
+  // Handle null/undefined
+  if (a == null || b == null) return a === b;
+
+  // Handle arrays
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    return a.every((item, index) => deepEqual(item, b[index]));
+  }
+
+  // Handle objects
+  if (typeof a === 'object' && typeof b === 'object' && a !== null && b !== null) {
+    const keysA = Object.keys(a as Record<string, unknown>);
+    const keysB = Object.keys(b as Record<string, unknown>);
+
+    if (keysA.length !== keysB.length) return false;
+
+    return keysA.every(key =>
+      keysB.includes(key) && deepEqual((a as Record<string, unknown>)[key], (b as Record<string, unknown>)[key])
+    );
+  }
+
+  return false;
+};
+
 export const useSEO = (options: SEOptions) => {
-  // Memoize dependencies for better performance
-  const dependencies = useMemo(() => [
-    options.title,
-    options.description,
-    options.lang,
-    options.canonical,
-    options.themeColor,
-    options.favicon,
-    JSON.stringify(options.meta),
-    JSON.stringify(options.link),
-    JSON.stringify(options.openGraph),
-    JSON.stringify(options.twitter),
-    JSON.stringify(options.jsonLd),
-    JSON.stringify(options.hreflang),
-    JSON.stringify(options.preload),
-    JSON.stringify(options.preconnect),
-    JSON.stringify(options.dnsPrefetch),
-    JSON.stringify(options.robots),
-    JSON.stringify(options.breadcrumbs),
-    options.viewport,
-  ], [
-    options.title,
-    options.description,
-    options.lang,
-    options.canonical,
-    options.themeColor,
-    options.favicon,
-    options.meta,
-    options.link,
-    options.openGraph,
-    options.twitter,
-    options.jsonLd,
-    options.hreflang,
-    options.preload,
-    options.preconnect,
-    options.dnsPrefetch,
-    options.robots,
-    options.breadcrumbs,
-    options.viewport,
-  ]);
+  // Use ref to store the previous options for deep comparison
+  const prevOptionsRef = useRef<SEOptions | null>(null);
 
   useEffect(() => {
-    updateSEO(options);
-  }, dependencies);
+    // Only update if options have actually changed
+    if (!prevOptionsRef.current || !deepEqual(prevOptionsRef.current, options)) {
+      prevOptionsRef.current = options;
+      updateSEO(options);
+    }
+  }, [options]);
 };

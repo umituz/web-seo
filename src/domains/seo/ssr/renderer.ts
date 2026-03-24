@@ -8,32 +8,68 @@
 import type { SEOptions } from "../types/index.js";
 
 // ============================================================================
-// HTML Escaping (Security)
+// HTML Escaping (Security) - Optimized
 // ============================================================================
+
+// Escape cache for better performance
+const escapeCache = new Map<string, string>();
 
 /**
  * Escape HTML special characters to prevent XSS attacks
+ * Optimized with caching and single-pass replacement
  */
 const escapeHTML = (str: string): string => {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
+  if (!str) return "";
+
+  // Check cache first
+  if (escapeCache.has(str)) {
+    return escapeCache.get(str)!;
+  }
+
+  // Single-pass replacement for better performance
+  const result = str.replace(/[&<>"']/g, (char) => {
+    switch (char) {
+      case '&': return '&amp;';
+      case '<': return '&lt;';
+      case '>': return '&gt;';
+      case '"': return '&quot;';
+      case "'": return '&#39;';
+      default: return char;
+    }
+  });
+
+  // Cache the result (limit cache size to prevent memory issues)
+  if (escapeCache.size < 1000) {
+    escapeCache.set(str, result);
+  }
+
+  return result;
 };
 
 /**
  * Escape JSON content for safe inclusion in HTML script tags
  * Prevents script breakage from </script> sequences in JSON data
+ * Optimized with caching
  */
 const escapeJSONForScript = (json: string): string => {
+  // Cache JSON escapes for better performance
+  const cacheKey = `json:${json}`;
+  if (escapeCache.has(cacheKey)) {
+    return escapeCache.get(cacheKey)!;
+  }
+
   // Replace </script> with <\/script> to prevent breaking out of script tag
-  return json.replace(/<\/script>/gi, "<\\/script>");
+  const result = json.replace(/<\/script>/gi, "<\\/script>");
+
+  if (escapeCache.size < 1000) {
+    escapeCache.set(cacheKey, result);
+  }
+
+  return result;
 };
 
 // ============================================================================
-// Main SEO Renderer
+// Main SEO Renderer - Optimized
 // ============================================================================
 
 export interface RenderedSEO {
@@ -51,13 +87,23 @@ export interface RenderedSEO {
   toString(): string;
 }
 
+// Render cache for better SSR performance
+const renderCache = new WeakMap<SEOptions, RenderedSEO>();
+
 /**
  * Render SEO options to HTML strings for server-side rendering
+ * Optimized with caching and efficient string building
  */
-export const renderSEO = (options: SEOptions): RenderedSEO => {
-  const metaTags: string[] = [];
-  const linkTags: string[] = [];
-  const jsonLdScripts: string[] = [];
+export const renderSEO = (options: SEOptions, useCache = true): RenderedSEO => {
+  // Check cache first
+  if (useCache && renderCache.has(options)) {
+    return renderCache.get(options)!;
+  }
+
+  // Use string builders for better performance
+  const metaTagsBuilder: string[] = [];
+  const linkTagsBuilder: string[] = [];
+  const jsonLdScriptsBuilder: string[] = [];
 
   // Title
   const title = options.titleTemplate
@@ -65,12 +111,12 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
     : escapeHTML(options.title || "");
 
   // Charset
-  metaTags.push('<meta charset="utf-8" />');
-  metaTags.push('<meta name="viewport" content="width=device-width, initial-scale=1" />');
+  metaTagsBuilder.push('<meta charset="utf-8" />');
+  metaTagsBuilder.push('<meta name="viewport" content="width=device-width, initial-scale=1" />');
 
   // Description
   if (options.description) {
-    metaTags.push(`<meta name="description" content="${escapeHTML(options.description)}" />`);
+    metaTagsBuilder.push(`<meta name="description" content="${escapeHTML(options.description)}" />`);
   }
 
   // Robots
@@ -88,146 +134,161 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
       if (options.robots.snippet !== undefined) directives.push(options.robots.snippet ? "all" : "nosnippet");
       robotsContent = directives.join(", ");
     }
-    metaTags.push(`<meta name="robots" content="${robotsContent}" />`);
+    metaTagsBuilder.push(`<meta name="robots" content="${robotsContent}" />`);
   }
 
   // Canonical
   if (options.canonical) {
-    linkTags.push(`<link rel="canonical" href="${escapeHTML(options.canonical)}" />`);
+    linkTagsBuilder.push(`<link rel="canonical" href="${escapeHTML(options.canonical)}" />`);
   }
 
   // Theme color
   if (options.themeColor) {
-    metaTags.push(`<meta name="theme-color" content="${escapeHTML(options.themeColor)}" />`);
+    metaTagsBuilder.push(`<meta name="theme-color" content="${escapeHTML(options.themeColor)}" />`);
   }
 
   // Favicon
   if (options.favicon) {
-    linkTags.push(`<link rel="icon" type="image/x-icon" href="${escapeHTML(options.favicon)}" />`);
+    linkTagsBuilder.push(`<link rel="icon" type="image/x-icon" href="${escapeHTML(options.favicon)}" />`);
   }
   if (options.appleTouchIcon) {
-    linkTags.push(`<link rel="apple-touch-icon" sizes="180x180" href="${escapeHTML(options.appleTouchIcon)}" />`);
+    linkTagsBuilder.push(`<link rel="apple-touch-icon" sizes="180x180" href="${escapeHTML(options.appleTouchIcon)}" />`);
   }
   if (options.maskIcon) {
-    linkTags.push(`<link rel="mask-icon" href="${escapeHTML(options.maskIcon)}" />`);
+    linkTagsBuilder.push(`<link rel="mask-icon" href="${escapeHTML(options.maskIcon)}" />`);
   }
 
   // Hreflang
   if (options.hreflang && options.hreflang.length > 0) {
-    options.hreflang.forEach((entry) => {
-      linkTags.push(`<link rel="alternate" hreflang="${escapeHTML(entry.lang)}" href="${escapeHTML(entry.url)}" />`);
-    });
+    for (const entry of options.hreflang) {
+      linkTagsBuilder.push(`<link rel="alternate" hreflang="${escapeHTML(entry.lang)}" href="${escapeHTML(entry.url)}" />`);
+    }
   }
 
   // Preload
   if (options.preload && options.preload.length > 0) {
-    options.preload.forEach((preload) => {
+    for (const preload of options.preload) {
       const attrs = [`rel="preload"`, `href="${escapeHTML(preload.href)}"`, `as="${escapeHTML(preload.as)}"`];
       if (preload.type) attrs.push(`type="${escapeHTML(preload.type)}"`);
       if (preload.crossOrigin) attrs.push(`crossorigin="${escapeHTML(preload.crossOrigin)}"`);
       if (preload.integrity) attrs.push(`integrity="${escapeHTML(preload.integrity)}"`);
-      linkTags.push(`<link ${attrs.join(" ")} />`);
-    });
+      linkTagsBuilder.push(`<link ${attrs.join(" ")} />`);
+    }
   }
 
   // Preconnect
   if (options.preconnect && options.preconnect.length > 0) {
-    options.preconnect.forEach((origin) => {
+    for (const origin of options.preconnect) {
       const attrs = [`rel="preconnect"`, `href="${escapeHTML(origin.href)}"`];
       if (origin.crossOrigin) attrs.push(`crossorigin="${escapeHTML(origin.crossOrigin)}"`);
-      linkTags.push(`<link ${attrs.join(" ")} />`);
-    });
+      linkTagsBuilder.push(`<link ${attrs.join(" ")} />`);
+    }
   }
 
   // DNS Prefetch
   if (options.dnsPrefetch && options.dnsPrefetch.length > 0) {
-    options.dnsPrefetch.forEach((domain) => {
-      linkTags.push(`<link rel="dns-prefetch" href="${escapeHTML(domain.href)}" />`);
-    });
+    for (const domain of options.dnsPrefetch) {
+      linkTagsBuilder.push(`<link rel="dns-prefetch" href="${escapeHTML(domain.href)}" />`);
+    }
   }
 
   // Custom meta tags
   if (options.meta && options.meta.length > 0) {
-    options.meta.forEach((m) => {
+    for (const m of options.meta) {
       if (m.name) {
-        metaTags.push(`<meta name="${escapeHTML(m.name)}" content="${escapeHTML(m.content)}" />`);
+        metaTagsBuilder.push(`<meta name="${escapeHTML(m.name)}" content="${escapeHTML(m.content)}" />`);
       }
       if (m.property) {
-        metaTags.push(`<meta property="${escapeHTML(m.property)}" content="${escapeHTML(m.content)}" />`);
+        metaTagsBuilder.push(`<meta property="${escapeHTML(m.property)}" content="${escapeHTML(m.content)}" />`);
       }
       if (m.httpEquiv) {
-        metaTags.push(`<meta http-equiv="${escapeHTML(m.httpEquiv)}" content="${escapeHTML(m.content)}" />`);
+        metaTagsBuilder.push(`<meta http-equiv="${escapeHTML(m.httpEquiv)}" content="${escapeHTML(m.content)}" />`);
       }
-    });
+    }
   }
 
   // Custom link tags
   if (options.link && options.link.length > 0) {
-    options.link.forEach((link) => {
+    for (const link of options.link) {
       const attrs = [`rel="${escapeHTML(link.rel)}"`, `href="${escapeHTML(link.href)}"`];
       if (link.type) attrs.push(`type="${escapeHTML(link.type)}"`);
       if (link.sizes) attrs.push(`sizes="${escapeHTML(link.sizes)}"`);
       if (link.media) attrs.push(`media="${escapeHTML(link.media)}"`);
       if (link.crossOrigin) attrs.push(`crossorigin="${escapeHTML(link.crossOrigin)}"`);
       if (link.as) attrs.push(`as="${escapeHTML(link.as)}"`);
-      linkTags.push(`<link ${attrs.join(" ")} />`);
-    });
+      linkTagsBuilder.push(`<link ${attrs.join(" ")} />`);
+    }
   }
 
   // Open Graph
   if (options.openGraph) {
-    if (options.openGraph.title) metaTags.push(`<meta property="og:title" content="${escapeHTML(options.openGraph.title)}" />`);
-    if (options.openGraph.description) metaTags.push(`<meta property="og:description" content="${escapeHTML(options.openGraph.description)}" />`);
-    if (options.openGraph.url) metaTags.push(`<meta property="og:url" content="${escapeHTML(options.openGraph.url)}" />`);
-    if (options.openGraph.type) metaTags.push(`<meta property="og:type" content="${escapeHTML(options.openGraph.type)}" />`);
-    if (options.openGraph.siteName) metaTags.push(`<meta property="og:site_name" content="${escapeHTML(options.openGraph.siteName)}" />`);
-    if (options.openGraph.locale) metaTags.push(`<meta property="og:locale" content="${escapeHTML(options.openGraph.locale)}" />`);
+    if (options.openGraph.title) metaTagsBuilder.push(`<meta property="og:title" content="${escapeHTML(options.openGraph.title)}" />`);
+    if (options.openGraph.description) metaTagsBuilder.push(`<meta property="og:description" content="${escapeHTML(options.openGraph.description)}" />`);
+    if (options.openGraph.url) metaTagsBuilder.push(`<meta property="og:url" content="${escapeHTML(options.openGraph.url)}" />`);
+    if (options.openGraph.type) metaTagsBuilder.push(`<meta property="og:type" content="${escapeHTML(options.openGraph.type)}" />`);
+    if (options.openGraph.siteName) metaTagsBuilder.push(`<meta property="og:site_name" content="${escapeHTML(options.openGraph.siteName)}" />`);
+    if (options.openGraph.locale) metaTagsBuilder.push(`<meta property="og:locale" content="${escapeHTML(options.openGraph.locale)}" />`);
 
     // Images
     if (options.openGraph.image) {
       if (Array.isArray(options.openGraph.image)) {
-        options.openGraph.image.forEach((img) => {
-          metaTags.push(`<meta property="og:image" content="${escapeHTML(img.url)}" />`);
-          if (img.alt) metaTags.push(`<meta property="og:image:alt" content="${escapeHTML(img.alt)}" />`);
-        });
+        for (const img of options.openGraph.image) {
+          metaTagsBuilder.push(`<meta property="og:image" content="${escapeHTML(img.url)}" />`);
+          if (img.alt) metaTagsBuilder.push(`<meta property="og:image:alt" content="${escapeHTML(img.alt)}" />`);
+        }
       } else {
-        metaTags.push(`<meta property="og:image" content="${escapeHTML(options.openGraph.image)}" />`);
+        metaTagsBuilder.push(`<meta property="og:image" content="${escapeHTML(options.openGraph.image)}" />`);
       }
     }
   }
 
   // Twitter Card
   if (options.twitter) {
-    if (options.twitter.cardType) metaTags.push(`<meta name="twitter:card" content="${escapeHTML(options.twitter.cardType)}" />`);
-    if (options.twitter.site) metaTags.push(`<meta name="twitter:site" content="${escapeHTML(options.twitter.site)}" />`);
-    if (options.twitter.handle) metaTags.push(`<meta name="twitter:creator" content="${escapeHTML(options.twitter.handle)}" />`);
-    if (options.twitter.title) metaTags.push(`<meta name="twitter:title" content="${escapeHTML(options.twitter.title)}" />`);
-    if (options.twitter.description) metaTags.push(`<meta name="twitter:description" content="${escapeHTML(options.twitter.description)}" />`);
-    if (options.twitter.image) metaTags.push(`<meta name="twitter:image" content="${escapeHTML(options.twitter.image)}" />`);
-    if (options.twitter.imageAlt) metaTags.push(`<meta name="twitter:image:alt" content="${escapeHTML(options.twitter.imageAlt)}" />`);
+    if (options.twitter.cardType) metaTagsBuilder.push(`<meta name="twitter:card" content="${escapeHTML(options.twitter.cardType)}" />`);
+    if (options.twitter.site) metaTagsBuilder.push(`<meta name="twitter:site" content="${escapeHTML(options.twitter.site)}" />`);
+    if (options.twitter.handle) metaTagsBuilder.push(`<meta name="twitter:creator" content="${escapeHTML(options.twitter.handle)}" />`);
+    if (options.twitter.title) metaTagsBuilder.push(`<meta name="twitter:title" content="${escapeHTML(options.twitter.title)}" />`);
+    if (options.twitter.description) metaTagsBuilder.push(`<meta name="twitter:description" content="${escapeHTML(options.twitter.description)}" />`);
+    if (options.twitter.image) metaTagsBuilder.push(`<meta name="twitter:image" content="${escapeHTML(options.twitter.image)}" />`);
+    if (options.twitter.imageAlt) metaTagsBuilder.push(`<meta name="twitter:image:alt" content="${escapeHTML(options.twitter.imageAlt)}" />`);
   }
 
   // JSON-LD
   if (options.jsonLd && options.jsonLd.length > 0) {
-    options.jsonLd.forEach((data) => {
+    for (const data of options.jsonLd) {
       const json = JSON.stringify(data);
       const safeJson = escapeJSONForScript(json);
-      jsonLdScripts.push(`<script type="application/ld+json">${safeJson}</script>`);
-    });
+      jsonLdScriptsBuilder.push(`<script type="application/ld+json">${safeJson}</script>`);
+    }
   }
 
-  return {
+  // Build result using cached arrays
+  const result: RenderedSEO = {
     title,
-    meta: metaTags.join("\n    "),
-    link: linkTags.join("\n    "),
-    jsonLd: jsonLdScripts.join("\n    "),
+    meta: metaTagsBuilder.join("\n    "),
+    link: linkTagsBuilder.join("\n    "),
+    jsonLd: jsonLdScriptsBuilder.join("\n    "),
     toHTML() {
-      return `    <title>${this.title}</title>\n${this.meta ? `    ${this.meta}\n` : ""}${this.link ? `    ${this.link}\n` : ""}${this.jsonLd ? `    ${this.jsonLd}\n` : ""}`;
+      // Use template literals for better performance
+      const parts: string[] = [`    <title>${this.title}</title>`];
+
+      if (this.meta) parts.push(`    ${this.meta}`);
+      if (this.link) parts.push(`    ${this.link}`);
+      if (this.jsonLd) parts.push(`    ${this.jsonLd}`);
+
+      return parts.join("\n");
     },
     toString() {
       return this.toHTML();
     },
   };
+
+  // Cache the result
+  if (useCache) {
+    renderCache.set(options, result);
+  }
+
+  return result;
 };
 
 // ============================================================================

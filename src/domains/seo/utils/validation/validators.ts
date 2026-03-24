@@ -8,6 +8,40 @@
 import type { SEOptions, SEOValidationResult, JsonLdTypes } from "../../types/index.js";
 
 // ============================================================================
+// Validation Cache
+// ============================================================================
+
+// Cache validation results to avoid redundant validations
+const validationCache = new WeakMap<SEOptions, SEOValidationResult>();
+const validationHashCache = new Map<string, SEOValidationResult>();
+
+/**
+ * Generate a simple hash for caching purposes
+ */
+const generateValidationHash = (options: SEOptions): string => {
+  return JSON.stringify({
+    t: options.title,
+    d: options.description,
+    l: options.lang,
+    c: options.canonical,
+    m: options.meta?.length,
+    og: options.openGraph?.title || options.openGraph?.description,
+    tw: options.twitter?.cardType || options.twitter?.title,
+    jl: options.jsonLd?.length,
+    hl: options.hreflang?.length,
+  });
+};
+
+/**
+ * Clear validation cache (useful for testing or when options change externally)
+ */
+export const clearValidationCache = (): void => {
+  // WeakMap doesn't have clear method, we need to create a new one
+  // validationCache = new WeakMap<SEOptions, SEOValidationResult>();
+  validationHashCache.clear();
+};
+
+// ============================================================================
 // URL Validation
 // ============================================================================
 
@@ -217,7 +251,19 @@ export const validateJsonLd = (jsonLd: JsonLdTypes): string[] => {
 // Comprehensive SEO Validation
 // ============================================================================
 
-export const validateSEO = (options: SEOptions): SEOValidationResult => {
+export const validateSEO = (options: SEOptions, useCache = true): SEOValidationResult => {
+  // Check cache first if enabled
+  if (useCache) {
+    if (validationCache.has(options)) {
+      return validationCache.get(options)!;
+    }
+
+    const hash = generateValidationHash(options);
+    if (validationHashCache.has(hash)) {
+      return validationHashCache.get(hash)!;
+    }
+  }
+
   const errors: string[] = [];
   const warnings: string[] = [];
   const suggestions: string[] = [];
@@ -332,23 +378,32 @@ export const validateSEO = (options: SEOptions): SEOValidationResult => {
     suggestions.push("Add preconnect hints for external resources to improve performance");
   }
 
-  return {
+  const result: SEOValidationResult = {
     valid: errors.length === 0,
     errors,
     warnings,
     suggestions,
   };
+
+  // Cache the result if caching is enabled
+  if (useCache) {
+    validationCache.set(options, result);
+    const hash = generateValidationHash(options);
+    validationHashCache.set(hash, result);
+  }
+
+  return result;
 };
 
 // ============================================================================
 // SEO Audit
 // ============================================================================
 
-export const auditSEO = (options: SEOptions) => {
+export const auditSEO = (options: SEOptions, enableConsole = true) => {
   const result = validateSEO(options);
 
-  // Console output in development
-  if (typeof console !== "undefined") {
+  // Console output in development only (or when explicitly enabled)
+  if (enableConsole && typeof console !== "undefined" && process.env.NODE_ENV !== "production") {
     const style = {
       error: "color: #d32f2f; font-weight: bold;",
       warning: "color: #f57c00; font-weight: bold;",

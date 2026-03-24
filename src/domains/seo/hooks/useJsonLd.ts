@@ -16,15 +16,36 @@ interface UseJsonLdOptions {
 }
 
 // Generate a stable hash from JSON-LD data for consistent identification
+// Optimized with better hashing algorithm and memoization
+const hashCache = new WeakMap<JsonLdTypes, string>();
+
 const generateDataId = (data: JsonLdTypes): string => {
-  const str = JSON.stringify(data);
-  let hash = 0;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32-bit integer
+  // Check cache first for better performance
+  if (hashCache.has(data)) {
+    return hashCache.get(data)!;
   }
-  return `jsonld-${Math.abs(hash).toString(36)}`;
+
+  // Use base64 encoding for faster, more reliable hashing
+  const str = JSON.stringify(data);
+
+  // Optimized hashing using cyrb53 algorithm (better distribution & performance)
+  let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+  for (let i = 0, ch; i < str.length; i++) {
+    ch = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ ch, 2654435761);
+    h2 = Math.imul(h2 ^ ch, 1597334677);
+  }
+
+  h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+  h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+  const hash = (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+  const result = `jsonld-${hash}`;
+
+  // Cache the result for future use
+  hashCache.set(data, result);
+
+  return result;
 };
 
 export const useJsonLd = (data: JsonLdTypes | JsonLdTypes[], options?: UseJsonLdOptions) => {
