@@ -1,218 +1,60 @@
 /**
  * SEO Serializer
  *
- * Serialization utilities for SEO data.
- * Used for server-side rendering and hydration.
+ * JSON and base64 (de)serialization of SEO options for SSR/hydration.
+ * Uses TextEncoder/TextDecoder for UTF-8 safety in the browser, and
+ * Buffer in Node when available.
  */
 
 import type { SEOptions } from "../types/index.js";
 
-// ============================================================================
-// Serialization
-// ============================================================================
+export const serializeSEO = (options: SEOptions): string => JSON.stringify(options);
 
-/**
- * Serialize SEO options to a string for transmission/hydration
- */
-export const serializeSEO = (options: SEOptions): string => {
-  return JSON.stringify(options);
-};
-
-/**
- * Deserialize SEO options from a string
- * @throws {SyntaxError} If data is not valid JSON
- */
 export const deserializeSEO = (data: string): SEOptions => {
   try {
     return JSON.parse(data);
   } catch (error) {
-    throw new Error(`[SEO] Failed to deserialize SEO data: ${error instanceof Error ? error.message : "Unknown error"}`);
+    const reason = error instanceof Error ? error.message : "Unknown error";
+    throw new Error(`[SEO] Failed to deserialize SEO data: ${reason}`);
   }
 };
 
-/**
- * Serialize SEO options to base64 for safe URL transmission
- */
-export const serializeSEOToBase64 = (options: SEOptions): string => {
-  const json = serializeSEO(options);
+const toBase64 = (json: string): string => {
   if (typeof Buffer !== "undefined") {
     return Buffer.from(json).toString("base64");
   }
-  // Browser fallback with UTF-8 support
-  const utf8Bytes = new TextEncoder().encode(json);
-  const binaryString = Array.from(utf8Bytes, (byte) => String.fromCharCode(byte)).join("");
-  return btoa(binaryString);
+  const bytes = new TextEncoder().encode(json);
+  return btoa(Array.from(bytes, (b) => String.fromCharCode(b)).join(""));
 };
 
-/**
- * Deserialize SEO options from base64
- */
-export const deserializeSEOFromBase64 = (base64: string): SEOptions => {
-  let json: string;
+const fromBase64 = (base64: string): string => {
   if (typeof Buffer !== "undefined") {
-    json = Buffer.from(base64, "base64").toString("utf-8");
-  } else {
-    // Browser fallback with UTF-8 support
-    const binaryString = atob(base64);
-    const bytes = new Uint8Array(binaryString.length);
-    for (let i = 0; i < binaryString.length; i++) {
-      bytes[i] = binaryString.charCodeAt(i);
-    }
-    json = new TextDecoder().decode(bytes);
+    return Buffer.from(base64, "base64").toString("utf-8");
   }
-  return deserializeSEO(json);
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder().decode(bytes);
 };
 
-// ============================================================================
-// State Management
-// ============================================================================
+export const serializeSEOToBase64 = (options: SEOptions): string =>
+  toBase64(serializeSEO(options));
 
-interface SEOState {
-  options: SEOptions;
-  timestamp: number;
-}
+export const deserializeSEOFromBase64 = (base64: string): SEOptions =>
+  deserializeSEO(fromBase64(base64));
 
 /**
- * Create SEO state with timestamp
- */
-export const createSEOState = (options: SEOptions): SEOState => {
-  return {
-    options,
-    timestamp: Date.now(),
-  };
-};
-
-/**
- * Serialize SEO state
- */
-export const serializeSEOState = (state: SEOState): string => {
-  return JSON.stringify(state);
-};
-
-/**
- * Deserialize SEO state
- * @throws {SyntaxError} If data is not valid JSON
- */
-export const deserializeSEOState = (data: string): SEOState => {
-  try {
-    return JSON.parse(data);
-  } catch (error) {
-    throw new Error(`[SEO] Failed to deserialize SEO state: ${error instanceof Error ? error.message : "Unknown error"}`);
-  }
-};
-
-/**
- * Check if SEO state is stale (older than specified milliseconds)
- */
-export const isSEOStateStale = (state: SEOState, maxAge: number = 3600000): boolean => {
-  return Date.now() - state.timestamp > maxAge;
-};
-
-// ============================================================================
-// Compression (for large SEO datasets)
-// ============================================================================
-
-/**
- * Compress SEO options using simple compression
- * Removes undefined values and empty arrays
- */
-export const compressSEO = (options: SEOptions): SEOptions => {
-  const compressed: Record<string, unknown> = {};
-
-  Object.entries(options).forEach(([key, value]) => {
-    if (value === undefined || (Array.isArray(value) && value.length === 0)) {
-      return;
-    }
-
-    // Compress nested objects
-    if (typeof value === "object" && !Array.isArray(value)) {
-      const compressedNested = compressSEO(value as SEOptions);
-      if (Object.keys(compressedNested).length > 0) {
-        compressed[key] = compressedNested;
-      }
-    } else {
-      compressed[key] = value;
-    }
-  });
-
-  return compressed as SEOptions;
-};
-
-/**
- * Decompress SEO options (identity function, kept for API consistency)
- */
-export const decompressSEO = (options: SEOptions): SEOptions => {
-  return options;
-};
-
-// ============================================================================
-// Query String Serialization
-// ============================================================================
-
-/**
- * Serialize SEO options to URL-safe query string
- * Only includes essential SEO data for social sharing previews
- */
-export const serializeSEOToQueryString = (options: SEOptions): string => {
-  const params = new URLSearchParams();
-
-  if (options.title) params.set("title", options.title);
-  if (options.description) params.set("description", options.description);
-  if (options.openGraph?.image) {
-    const image = Array.isArray(options.openGraph.image)
-      ? options.openGraph.image[0]?.url
-      : options.openGraph.image;
-    if (image) params.set("image", image);
-  }
-
-  return params.toString();
-};
-
-/**
- * Deserialize SEO options from query string
- */
-export const deserializeSEOFromQueryString = (queryString: string): Partial<SEOptions> => {
-  const params = new URLSearchParams(queryString);
-  const options: Partial<SEOptions> = {};
-
-  if (params.has("title")) options.title = params.get("title")!;
-  if (params.has("description")) options.description = params.get("description")!;
-  if (params.has("image")) {
-    options.openGraph = {
-      image: params.get("image")!,
-    };
-  }
-
-  return options;
-};
-
-// ============================================================================
-// Validation
-// ============================================================================
-
-/**
- * Validate serialized SEO data before deserialization
- */
-export const validateSerializedSEO = (data: string): boolean => {
-  try {
-    const parsed = JSON.parse(data);
-    return typeof parsed === "object" && parsed !== null;
-  } catch {
-    return false;
-  }
-};
-
-/**
- * Safe deserialize with validation
+ * Safe deserialize: returns `null` instead of throwing on invalid input.
+ * Use this when consuming data from an untrusted source (URL params, cookies).
  */
 export const safeDeserializeSEO = (data: string): SEOptions | null => {
-  if (!validateSerializedSEO(data)) {
-    console.error("[SEO] Invalid serialized data");
-    return null;
-  }
-
   try {
-    return deserializeSEO(data);
+    const parsed = JSON.parse(data);
+    if (typeof parsed !== "object" || parsed === null) {
+      console.error("[SEO] Invalid serialized data: not an object");
+      return null;
+    }
+    return parsed as SEOptions;
   } catch (error) {
     console.error("[SEO] Error deserializing data:", error);
     return null;

@@ -10,8 +10,10 @@ export { useSEO } from "./domains/seo/hooks/useSEO.js";
 export { useJsonLd } from "./domains/seo/hooks/useJsonLd.js";
 export { initSEO } from "./domains/seo/core/init.js";
 
-// Utils
-export { updateSEO, clearSEO, getCurrentSEOState } from "./domains/seo/utils/dom.js";
+// DOM operations
+export { updateSEO, clearSEO, getCurrentSEOState } from "./domains/seo/utils/dom/index.js";
+
+// Schema generators
 export {
   generateArticleSchema,
   generateProductSchema,
@@ -22,7 +24,11 @@ export {
   generateWebSiteSchema,
   generatePersonSchema,
   generateVideoSchema,
-} from "./domains/seo/utils/schema-generators/schema.js";
+  generateCourseSchema,
+  schemaFactory,
+} from "./domains/seo/utils/schema-generators/index.js";
+
+// Validators + text helpers
 export {
   validateSEO,
   auditSEO,
@@ -32,9 +38,10 @@ export {
   validateDescriptionLength,
   validateOpenGraphImage,
   validateHreflangEntry,
-  truncateForSEO,
+  truncateToTitle,
+  truncateToDescription,
   generateSlug,
-} from "./domains/seo/utils/validation/validators.js";
+} from "./domains/seo/utils/validation/index.js";
 
 // SSR
 export {
@@ -43,17 +50,12 @@ export {
   extractSEOData,
   hydrateSEO,
   renderAsHelmet,
-} from "./domains/seo/ssr/renderer.js";
-export {
   serializeSEO,
   deserializeSEO,
   serializeSEOToBase64,
   deserializeSEOFromBase64,
-  compressSEO,
-  serializeSEOToQueryString,
-  deserializeSEOFromQueryString,
   safeDeserializeSEO,
-} from "./domains/seo/ssr/serializer.js";
+} from "./domains/seo/ssr/index.js";
 
 // Vite Plugin - NOT exported from main entry to avoid Node.js dependencies in browser
 // Use: import { viteSEOPlugin } from "@umituz/web-seo/vite" instead
@@ -63,7 +65,6 @@ export type {
   // Core
   MetaTag,
   LinkTag,
-  ScriptTag,
   SEOptions,
   SEOConfig,
 
@@ -103,7 +104,24 @@ export type {
   WebSiteJsonLd,
   PersonJsonLd,
   VideoJsonLd,
+  CourseJsonLd,
+  CourseInstance,
   SchemaType,
   SchemaGeneratorOptions,
 } from "./domains/seo/types/schema.js";
 
+// Schema generator input types
+export type {
+  ArticleSchemaInput,
+  ProductSchemaInput,
+  OrganizationSchemaInput,
+  LocalBusinessSchemaInput,
+  FAQItemInput,
+  WebSiteSchemaInput,
+  PersonSchemaInput,
+  VideoSchemaInput,
+  CourseSchemaInput,
+  CourseInstanceInput,
+} from "./domains/seo/utils/schema-generators/types.js";
+
+export type { SchemaKind } from "./domains/seo/utils/schema-generators/factory.js";

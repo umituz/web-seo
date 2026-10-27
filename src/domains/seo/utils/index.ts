@@ -1,14 +1,11 @@
 /**
  * SEO Utils
  *
- * Utility functions for SEO management
+ * Public utility surface for SEO management.
  */
 
 // Core DOM operations
-export { updateSEO, clearSEO, getCurrentSEOState } from "./dom.js";
-
-// Meta tag utilities
-export * from "./meta-tags/index.js";
+export { updateSEO, clearSEO, getCurrentSEOState } from "./dom/index.js";
 
 // Schema generators
 export {
@@ -33,6 +30,7 @@ export {
   validateDescriptionLength,
   validateOpenGraphImage,
   validateHreflangEntry,
-  truncateForSEO,
+  truncateToTitle,
+  truncateToDescription,
   generateSlug,
 } from "./validation/index.js";

@@ -1,8 +1,10 @@
 /**
- * SEO Vite Plugin
+ * Vite plugin entry point.
  *
- * Vite plugin for build-time SEO optimization
+ * Lives behind a subpath import (`@umituz/web-seo/vite`) to keep Node-only
+ * dependencies out of the main browser bundle.
  */
 
-export { viteSEOPlugin, quickSEOSetup } from "./plugin.js";
-export type { ViteSEOPluginOptions } from "./plugin.js";
+export { viteSEOPlugin } from "./plugin.js";
+export { quickSEOSetup } from "./presets.js";
+export type { ViteSEOPluginOptions } from "./types.js";

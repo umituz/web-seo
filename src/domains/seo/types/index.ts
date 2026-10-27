@@ -22,11 +22,6 @@ export interface LinkTag {
   as?: string;
 }
 
-export interface ScriptTag {
-  type: string;
-  innerHTML: string;
-}
-
 // ============================================================================
 // Robots Meta Tags
 // ============================================================================

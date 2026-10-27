@@ -273,6 +273,33 @@ export interface BookJsonLd extends Thing {
 }
 
 // ============================================================================
+// Course Schema
+// ============================================================================
+
+export interface CourseInstance {
+  "@type": "CourseInstance";
+  courseMode?: "online" | "onsite" | "blended" | string;
+  courseWorkload?: string;
+  instructor?: PersonOrOrganization;
+  inLanguage?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface CourseJsonLd extends Thing {
+  "@type": "Course";
+  provider: PersonOrOrganization;
+  offers?: Offer | Offer[];
+  courseCode?: string;
+  educationalLevel?: string;
+  inLanguage?: string;
+  hasCourseInstance?: CourseInstance | CourseInstance[];
+  teaches?: string | string[];
+  aggregateRating?: AggregateRating;
+  review?: Review[];
+}
+
+// ============================================================================
 // Union Types
 // ============================================================================
 
@@ -287,7 +314,8 @@ export type JsonLdTypes =
   | PersonJsonLd
   | VideoJsonLd
   | AudioJsonLd
-  | BookJsonLd;
+  | BookJsonLd
+  | CourseJsonLd;
 
 export type SchemaType = JsonLdTypes["@type"];
 
