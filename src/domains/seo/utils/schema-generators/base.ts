@@ -1,14 +1,3 @@
-/**
- * Schema generator base (Template Method).
- *
- * Each generator runs the same flow:
- *   1. Validate required fields (warn in non-strict, throw in strict).
- *   2. Build the schema body.
- *   3. Return the assembled JSON-LD object.
- *
- * `buildSchema` wraps that flow so individual generators can focus on
- * the schema body that actually differs between types.
- */
 
 import { SCHEMA_CONTEXT } from "../../core/constants.js";
 import type { SchemaGeneratorOptions } from "../../types/schema.js";

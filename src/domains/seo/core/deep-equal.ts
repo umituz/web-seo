@@ -1,10 +1,3 @@
-/**
- * Deep equality for SEO options and JSON-LD payloads.
- *
- * Used by React component memoization, the useSEO hook, and the JsonLd hook
- * to avoid re-running DOM mutations or re-injecting <script> tags when the
- * incoming object reference changes but the content is structurally equal.
- */
 
 export const deepEqual = (a: unknown, b: unknown): boolean => {
   if (a === b) return true;

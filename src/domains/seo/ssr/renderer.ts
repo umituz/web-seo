@@ -1,10 +1,3 @@
-/**
- * SEO SSR Renderer.
- *
- * Generates HTML strings for meta tags and structured data. Uses the same
- * strategy registry as the DOM mutator, so DOM and SSR output are
- * guaranteed to stay in sync.
- */
 
 import { escapeHTML } from "../core/escape.js";
 import { SEO_STRATEGIES } from "../core/seo-strategies.js";
@@ -39,9 +32,6 @@ const findTitle = (meta: string): string => {
 const stripTitle = (meta: string): string =>
   meta.replace(/<title>[\s\S]*?<\/title>\n?/, "");
 
-/**
- * Render SEO options to HTML strings for server-side rendering.
- */
 export const renderSEO = (options: SEOptions): RenderedSEO => {
   const ctx = buildHTMLContext();
   for (const strategy of SEO_STRATEGIES) {
@@ -71,9 +61,6 @@ export const renderSEO = (options: SEOptions): RenderedSEO => {
   };
 };
 
-/**
- * Generate a complete `<head>` block for the given SEO options.
- */
 export const generateHead = (options: SEOptions): string => {
   const rendered = renderSEO(options);
   const langAttr = options.lang ? ` lang="${escapeHTML(options.lang)}"` : "";
@@ -85,16 +72,8 @@ export const generateHead = (options: SEOptions): string => {
   return `  <head${langAttr}>\n${indented}\n  </head>`;
 };
 
-/**
- * Extract SEO options as a JSON string for client-side hydration.
- */
 export const extractSEOData = (options: SEOptions): string => JSON.stringify(options);
 
-/**
- * Hydrate SEO on the client by applying the deserialized options to the DOM.
- * Swallows JSON parse errors and dynamic-import errors with a console error
- * — the page should still render even if hydration fails.
- */
 export const hydrateSEO = (serializedData: string): void => {
   if (typeof window === "undefined") return;
 

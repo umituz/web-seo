@@ -1,9 +1,3 @@
-/**
- * Vite SEO Plugin
- *
- * Build-time SEO asset generator. Emits `sitemap.xml` and `robots.txt`
- * as Vite bundle assets so they land in the build output automatically.
- */
 
 import type { Plugin, ResolvedConfig } from "vite";
 import { generateRobotsTxt } from "./robots-generator.js";

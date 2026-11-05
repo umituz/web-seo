@@ -1,9 +1,3 @@
-/**
- * URL validation.
- *
- * Exposed at module scope so individual checks can be reused (e.g. the
- * image validator and the hreflang validator both need `isValidUrl`).
- */
 
 export const isValidUrl = (url: string): boolean => {
   if (!url) return false;

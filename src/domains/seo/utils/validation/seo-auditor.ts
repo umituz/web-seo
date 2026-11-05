@@ -1,9 +1,3 @@
-/**
- * Comprehensive SEO validation and audit.
- *
- * `validateSEO` returns a structured result; `auditSEO` adds a dev-friendly
- * console summary. Neither mutates inputs.
- */
 
 import type { SEOValidationResult, SEOptions } from "../../types/index.js";
 import { validateHreflangEntry } from "./hreflang-validator.js";
@@ -17,7 +11,6 @@ export const validateSEO = (options: SEOptions): SEOValidationResult => {
   const warnings: string[] = [];
   const suggestions: string[] = [];
 
-  // Title
   if (options.title) {
     const error = validateTitleLength(options.title);
     if (error) warnings.push(error);
@@ -25,7 +18,6 @@ export const validateSEO = (options: SEOptions): SEOValidationResult => {
     errors.push("Title is missing");
   }
 
-  // Description
   if (options.description) {
     const error = validateDescriptionLength(options.description);
     if (error) warnings.push(error);
@@ -33,7 +25,6 @@ export const validateSEO = (options: SEOptions): SEOValidationResult => {
     warnings.push("Description is missing");
   }
 
-  // Canonical
   if (options.canonical) {
     const error = validateUrl(options.canonical, "Canonical URL");
     if (error) errors.push(error);
@@ -41,13 +32,11 @@ export const validateSEO = (options: SEOptions): SEOValidationResult => {
     suggestions.push("Add a canonical URL to prevent duplicate content issues");
   }
 
-  // Language
   if (!options.lang) {
     warnings.push("Language attribute is missing");
     suggestions.push('Add lang attribute (e.g., <html lang="en">)');
   }
 
-  // Open Graph
   if (!options.openGraph) {
     suggestions.push("Add Open Graph tags for better social media sharing");
   } else if (!options.openGraph.image) {
@@ -60,12 +49,10 @@ export const validateSEO = (options: SEOptions): SEOValidationResult => {
     if (imageError) warnings.push(imageError);
   }
 
-  // Twitter
   if (!options.twitter) {
     suggestions.push("Add Twitter Card tags for better Twitter sharing");
   }
 
-  // Hreflang
   if (options.hreflang && options.hreflang.length > 0) {
     options.hreflang.forEach((entry, index) => {
       const error = validateHreflangEntry(entry);
@@ -77,7 +64,6 @@ export const validateSEO = (options: SEOptions): SEOValidationResult => {
     }
   }
 
-  // JSON-LD
   if (options.jsonLd && options.jsonLd.length > 0) {
     options.jsonLd.forEach((data, index) => {
       validateJsonLd(data).forEach((error) => {
@@ -88,7 +74,6 @@ export const validateSEO = (options: SEOptions): SEOValidationResult => {
     suggestions.push("Add JSON-LD structured data for rich snippets in search results");
   }
 
-  // Favicon + theme color
   if (!options.favicon) {
     suggestions.push("Add a favicon for better brand recognition in browser tabs");
   }
@@ -96,7 +81,6 @@ export const validateSEO = (options: SEOptions): SEOValidationResult => {
     suggestions.push("Add a theme color for better mobile browser integration");
   }
 
-  // Performance
   if (!options.preconnect || options.preconnect.length === 0) {
     suggestions.push("Add preconnect hints for external resources to improve performance");
   }
@@ -111,14 +95,6 @@ const STYLE = {
   info: "color: #1976d2; font-weight: bold;",
 } as const;
 
-/**
- * Validate SEO options and print a human-readable report to the console.
- * Opt-in: pass `enableConsole: true` to actually log.
- *
- * Browser-safe: does not read `process.env` (which is undefined in some
- * browser bundles). Use Vite's `import.meta.env.DEV` or a build-time
- * constant if you want dev-only output.
- */
 export const auditSEO = (options: SEOptions, enableConsole = true): SEOValidationResult => {
   const result = validateSEO(options);
 

@@ -1,8 +1,3 @@
-/**
- * SSR entry point.
- *
- * Re-exports the renderer, helmet adapter, and serializer.
- */
 
 export { renderSEO, generateHead, extractSEOData, hydrateSEO } from "./renderer.js";
 export { renderAsHelmet } from "./helmet.js";

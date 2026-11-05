@@ -1,10 +1,3 @@
-/**
- * JSON-LD payload validation.
- *
- * Each Schema.org type has its own set of required fields. We use a
- * small type-specific validator per `@type` rather than a giant switch
- * to keep each branch easy to extend.
- */
 
 import type { JsonLdTypes } from "../../types/schema.js";
 

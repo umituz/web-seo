@@ -1,10 +1,3 @@
-/**
- * `useJsonLd(data, options?)` hook.
- *
- * Programmatic JSON-LD injection. Returns `inject`/`remove` callbacks
- * so the caller can re-fire the injection on demand (e.g. after a route
- * transition) or clean up manually.
- */
 
 import { useCallback, useEffect, useMemo } from "react";
 import { generateDataId } from "../core/hash.js";

@@ -1,7 +1,3 @@
-/**
- * Schema generator input types.
- * Kept in one place so consumers can import just the shapes they need.
- */
 
 export interface ArticleSchemaInput {
   headline: string;

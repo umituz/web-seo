@@ -1,9 +1,3 @@
-/**
- * `useSEO(options)` hook.
- *
- * Imperative alternative to the `<SEO>` component for callers that need
- * to derive SEO options from arbitrary React state without a wrapper.
- */
 
 import { useEffect, useRef } from "react";
 import { deepEqual } from "../core/deep-equal.js";

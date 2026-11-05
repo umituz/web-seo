@@ -1,9 +1,3 @@
-/**
- * HTML / JSON escaping for safe SSR output.
- *
- * Bounded caches prevent unbounded growth when the renderer is fed many
- * long-lived pages on a Node server.
- */
 
 import { DEFAULT_CACHE_LIMIT } from "./constants.js";
 
@@ -34,10 +28,6 @@ export const escapeHTML = (str: string): string => {
   return pushCached(str, escaped);
 };
 
-/**
- * Escape JSON for inclusion inside a <script> tag.
- * Prevents `</script>` inside user JSON from breaking out of the script.
- */
 export const escapeJSONForScript = (json: string): string => {
   const cacheKey = `json:${json}`;
   if (escapeCache.has(cacheKey)) return escapeCache.get(cacheKey)!;

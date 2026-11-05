@@ -13,7 +13,7 @@ export const generateArticleSchema = createBuilder<ArticleSchemaInput, ArticleJs
   ctx.set(withContext(input.type ?? "Article"));
   ctx.set({
     headline: input.headline,
-    name: input.headline, // required by base Thing schema
+    name: input.headline,
     description: input.description,
     image: input.image,
     datePublished: input.datePublished,

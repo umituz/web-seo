@@ -1,13 +1,3 @@
-/**
- * SEO tag strategies (Strategy pattern).
- *
- * One strategy per concern. The same strategy is consumed by:
- *   - `dom/dom-mutator.ts`     – applies the change to the live DOM
- *   - `ssr/renderer.ts`        – serializes the change to an HTML string
- *
- * Replaces the historical god-functions in `dom.ts` and `renderer.ts` and
- * fixes the divergence where SSR silently dropped OG image width/height.
- */
 
 import type { RobotsDirective, RobotsMeta, SEOptions } from "../types/index.js";
 import { escapeHTML, escapeJSONForScript } from "./escape.js";
@@ -37,7 +27,6 @@ const robotsDirectivesToMeta = (directives: RobotsDirective[]): RobotsMeta => {
       case "nosnippet":         meta.snippet = false; break;
       case "notranslate":       meta.translate = false; break;
       case "noimageindex":      meta.imageIndex = false; break;
-      // "unavailable_after" needs a date and is exposed via RobotsMeta only.
     }
   }
   return meta;
@@ -68,9 +57,6 @@ const robotsMetaToString = (robots: RobotsMeta | RobotsDirective[]): string => {
   return directives.join(", ");
 };
 
-// ============================================================================
-// Title
-// ============================================================================
 
 export const titleStrategy: Strategy = {
   id: "title",
@@ -85,9 +71,6 @@ export const titleStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Language
-// ============================================================================
 
 export const langStrategy: Strategy = {
   id: "lang",
@@ -96,15 +79,10 @@ export const langStrategy: Strategy = {
     if (o.lang) document.documentElement.lang = o.lang;
   },
   applyHTML: (o, ctx) => {
-    // <html lang> is emitted by the renderer wrapper, but we expose lang
-    // through a special sentinel line that the head wrapper reads.
     if (o.lang) ctx.meta.push(`<!-- lang:${o.lang} -->`);
   },
 };
 
-// ============================================================================
-// Description
-// ============================================================================
 
 export const descriptionStrategy: Strategy = {
   id: "description",
@@ -117,9 +95,6 @@ export const descriptionStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Canonical
-// ============================================================================
 
 export const canonicalStrategy: Strategy = {
   id: "canonical",
@@ -132,9 +107,6 @@ export const canonicalStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Robots
-// ============================================================================
 
 export const robotsStrategy: Strategy = {
   id: "robots",
@@ -151,9 +123,6 @@ export const robotsStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Viewport
-// ============================================================================
 
 export const viewportStrategy: Strategy = {
   id: "viewport",
@@ -166,9 +135,6 @@ export const viewportStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Theme color
-// ============================================================================
 
 export const themeColorStrategy: Strategy = {
   id: "theme-color",
@@ -181,9 +147,6 @@ export const themeColorStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Favicons
-// ============================================================================
 
 export const faviconStrategy: Strategy = {
   id: "favicons",
@@ -200,16 +163,12 @@ export const faviconStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Hreflang
-// ============================================================================
 
 export const hreflangStrategy: Strategy = {
   id: "hreflang",
   applies: (o) => Boolean(o.hreflang && o.hreflang.length > 0),
   applyDOM: (o, ctx) => {
     if (!o.hreflang) return;
-    // Drop stale hreflang tags first.
     document.querySelectorAll('link[rel="alternate"][hreflang]').forEach((el) => el.remove());
     for (const entry of o.hreflang) {
       ctx.setLink({ [ATTR.rel]: "alternate", [ATTR.hreflang]: entry.lang, [ATTR.href]: entry.url });
@@ -225,9 +184,6 @@ export const hreflangStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Preload / Preconnect / DNS prefetch
-// ============================================================================
 
 const buildPreloadAttrs = (preload: NonNullable<SEOptions["preload"]>[number]): Record<string, string> => {
   const attrs: Record<string, string> = { [ATTR.rel]: "preload", [ATTR.href]: preload.href, [ATTR.as]: preload.as };
@@ -295,9 +251,6 @@ export const dnsPrefetchStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Custom meta tags
-// ============================================================================
 
 export const customMetaStrategy: Strategy = {
   id: "custom-meta",
@@ -320,9 +273,6 @@ export const customMetaStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Custom link tags
-// ============================================================================
 
 export const customLinkStrategy: Strategy = {
   id: "custom-link",
@@ -353,9 +303,6 @@ export const customLinkStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Open Graph
-// ============================================================================
 
 const ogProperty = (name: string, value: string | undefined, ctx: { meta: string[] }): void => {
   if (!value) return;
@@ -367,8 +314,6 @@ const ogImageTags = (image: NonNullable<SEOptions["openGraph"]>["image"]): { met
   if (!image) return sink;
 
   if (Array.isArray(image)) {
-    // Spec: emit one <meta property="og:image" ...> per image, plus
-    // per-image og:image:width / :height / :alt / :type.
     for (const img of image) {
       ogProperty("image", img.url, sink);
       if (img.width)  ogProperty("image:width",  String(img.width), sink);
@@ -508,16 +453,7 @@ export const openGraphStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Twitter Card
-// ============================================================================
 
-/**
- * Twitter cards should fall back to OpenGraph values for the common
- * title/description/image fields when those are omitted. We only pick
- * the overlapping fields — Twitter has no concept of OG's `firstName`,
- * `product`, etc.
- */
 const twitterFallback = (
   twitter: NonNullable<SEOptions["twitter"]>,
   openGraph: SEOptions["openGraph"]
@@ -615,18 +551,11 @@ export const twitterStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// JSON-LD
-// ============================================================================
 
 export const jsonLdStrategy: Strategy = {
   id: "json-ld",
   applies: (o) => Boolean(o.jsonLd && o.jsonLd.length > 0),
   applyDOM: () => {
-    // JSON-LD injection is owned by the JsonLd component / useJsonLd hook
-    // because each <script> needs a stable id, conflict resolution, and
-    // cleanup on unmount. A strategy that "applies" it would have to
-    // duplicate all of that logic, so we no-op here intentionally.
   },
   applyHTML: (o, ctx) => {
     if (!o.jsonLd) return;
@@ -638,9 +567,6 @@ export const jsonLdStrategy: Strategy = {
   },
 };
 
-// ============================================================================
-// Registry
-// ============================================================================
 
 export const SEO_STRATEGIES: readonly Strategy[] = Object.freeze([
   titleStrategy,

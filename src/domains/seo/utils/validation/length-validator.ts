@@ -1,9 +1,3 @@
-/**
- * Title and description length validation + truncation helpers.
- *
- * Bounds are exported from `core/constants` so all SEO concerns agree on
- * the recommended ranges.
- */
 
 import {
   DESCRIPTION_MAX_LENGTH,

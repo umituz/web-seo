@@ -1,9 +1,3 @@
-/**
- * SEO Validators
- *
- * Validation utilities, organized by concern. Each submodule is a small,
- * focused unit so consumers can pull in only what they need.
- */
 
 export { isValidUrl, validateUrl } from "./url-validator.js";
 export { isValidLanguageCode } from "./language-code.js";

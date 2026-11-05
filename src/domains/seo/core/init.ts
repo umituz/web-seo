@@ -1,14 +1,3 @@
-/**
- * `initSEO(config)` — application-level SEO bootstrap.
- *
- * Sets default SEO options on first call and re-applies them whenever
- * the i18n instance reports a language change. Returns a cleanup
- * function that detaches the listener.
- *
- * i18n is modeled as a Strategy via the `I18nInstance` interface; any
- * adapter exposing `t`, `on`, and `language` works (i18next, react-intl,
- * etc.) without a hard dependency.
- */
 
 import type { SEOConfig } from "../types/index.js";
 import { updateSEO } from "../utils/dom/index.js";

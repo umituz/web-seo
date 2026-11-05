@@ -1,6 +1,3 @@
-// ============================================================================
-// Schema.org Types for JSON-LD Structured Data
-// ============================================================================
 
 export interface BaseJsonLd {
   "@context": string;
@@ -16,9 +13,6 @@ export interface Thing extends BaseJsonLd {
   sameAs?: string | string[];
 }
 
-// ============================================================================
-// Article Schema
-// ============================================================================
 
 export interface ArticleJsonLd extends Thing {
   "@type": "Article" | "NewsArticle" | "BlogPosting";
@@ -42,9 +36,6 @@ export interface PersonOrOrganization {
   image?: string;
 }
 
-// ============================================================================
-// Product Schema
-// ============================================================================
 
 export interface ProductJsonLd extends Thing {
   "@type": "Product";
@@ -94,9 +85,6 @@ export interface Review {
   datePublished?: string;
 }
 
-// ============================================================================
-// Organization Schema
-// ============================================================================
 
 export interface OrganizationJsonLd extends Thing {
   "@type": "Organization" | "LocalBusiness" | "Restaurant" | "Store" | "Dentist" | "Hospital";
@@ -128,9 +116,6 @@ export interface PostalAddress {
   addressCountry: string;
 }
 
-// ============================================================================
-// Local Business Schema
-// ============================================================================
 
 export interface LocalBusinessJsonLd extends OrganizationJsonLd {
   "@type": "LocalBusiness" | "Restaurant" | "Store" | "Dentist" | "Hospital";
@@ -155,9 +140,6 @@ export interface OpeningHoursSpecification {
   validThrough?: string;
 }
 
-// ============================================================================
-// Breadcrumb Schema
-// ============================================================================
 
 export interface BreadcrumbJsonLd extends BaseJsonLd {
   "@type": "BreadcrumbList";
@@ -171,9 +153,6 @@ export interface BreadcrumbItem {
   item?: string;
 }
 
-// ============================================================================
-// FAQ Schema
-// ============================================================================
 
 export interface FAQJsonLd extends BaseJsonLd {
   "@type": "FAQPage";
@@ -189,9 +168,6 @@ export interface FAQItem {
   };
 }
 
-// ============================================================================
-// WebSite Schema
-// ============================================================================
 
 export interface WebSiteJsonLd extends Thing {
   "@type": "WebSite";
@@ -204,9 +180,6 @@ export interface WebSiteJsonLd extends Thing {
   publisher?: OrganizationJsonLd;
 }
 
-// ============================================================================
-// Person Schema
-// ============================================================================
 
 export interface PersonJsonLd extends Thing {
   "@type": "Person";
@@ -225,9 +198,6 @@ export interface PersonJsonLd extends Thing {
   };
 }
 
-// ============================================================================
-// Video Schema
-// ============================================================================
 
 export interface VideoJsonLd extends Thing {
   "@type": "VideoObject";
@@ -245,9 +215,6 @@ export interface VideoJsonLd extends Thing {
   };
 }
 
-// ============================================================================
-// Audio Schema
-// ============================================================================
 
 export interface AudioJsonLd extends Thing {
   "@type": "AudioObject";
@@ -257,9 +224,6 @@ export interface AudioJsonLd extends Thing {
   encodingFormat?: string;
 }
 
-// ============================================================================
-// Book Schema
-// ============================================================================
 
 export interface BookJsonLd extends Thing {
   "@type": "Book";
@@ -272,9 +236,6 @@ export interface BookJsonLd extends Thing {
   aggregateRating?: AggregateRating;
 }
 
-// ============================================================================
-// Course Schema
-// ============================================================================
 
 export interface CourseInstance {
   "@type": "CourseInstance";
@@ -299,9 +260,6 @@ export interface CourseJsonLd extends Thing {
   review?: Review[];
 }
 
-// ============================================================================
-// Union Types
-// ============================================================================
 
 export type JsonLdTypes =
   | ArticleJsonLd
@@ -319,13 +277,8 @@ export type JsonLdTypes =
 
 export type SchemaType = JsonLdTypes["@type"];
 
-// ============================================================================
-// Helper Types
-// ============================================================================
 
 export interface SchemaGeneratorOptions {
-  /** Strict mode - throws errors instead of warnings */
   strict?: boolean;
-  /** Validate generated schema against Schema.org requirements */
   validate?: boolean;
 }

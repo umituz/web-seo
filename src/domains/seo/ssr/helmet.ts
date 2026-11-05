@@ -1,10 +1,3 @@
-/**
- * Helmet-compatible output for libraries that expect a `react-helmet`-style
- * data shape (e.g. older Next.js APIs).
- *
- * This module is intentionally minimal: it only reports the title and html
- * attributes. The full meta/link/JSON-LD output is available via `renderSEO`.
- */
 
 import type { SEOptions } from "../types/index.js";
 import { renderSEO } from "./renderer.js";

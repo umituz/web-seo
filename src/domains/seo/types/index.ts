@@ -1,8 +1,5 @@
 import { JsonLdTypes } from "./schema.js";
 
-// ============================================================================
-// Core Types
-// ============================================================================
 
 export interface MetaTag {
   name?: string;
@@ -22,9 +19,6 @@ export interface LinkTag {
   as?: string;
 }
 
-// ============================================================================
-// Robots Meta Tags
-// ============================================================================
 
 export type RobotsDirective =
   | "index"
@@ -50,18 +44,12 @@ export interface RobotsMeta {
   unavailableAfter?: string;
 }
 
-// ============================================================================
-// Hreflang Support
-// ============================================================================
 
 export interface HreflangEntry {
   lang: string;
   url: string;
 }
 
-// ============================================================================
-// Performance Hints
-// ============================================================================
 
 export interface PreloadHint {
   href: string;
@@ -80,9 +68,6 @@ export interface DnsPrefetchDomain {
   href: string;
 }
 
-// ============================================================================
-// Article/Blog Post Specific
-// ============================================================================
 
 export interface ArticleMeta {
   publishedTime?: string;
@@ -93,9 +78,6 @@ export interface ArticleMeta {
   tag?: string[];
 }
 
-// ============================================================================
-// Product Specific
-// ============================================================================
 
 export interface ProductMeta {
   price?: number;
@@ -106,9 +88,6 @@ export interface ProductMeta {
   condition?: "NewCondition" | "UsedCondition" | "RefurbishedCondition";
 }
 
-// ============================================================================
-// Breadcrumb
-// ============================================================================
 
 export interface BreadcrumbItem {
   name: string;
@@ -116,26 +95,19 @@ export interface BreadcrumbItem {
   position?: number;
 }
 
-// ============================================================================
-// Extended SEO Options
-// ============================================================================
 
 export interface SEOptions {
-  // Basic
   title?: string;
   titleTemplate?: string;
   description?: string;
   lang?: string;
   canonical?: string;
 
-  // Robots
   robots?: RobotsMeta | RobotsDirective[];
 
-  // Meta Tags
   meta?: MetaTag[];
   link?: LinkTag[];
 
-  // Open Graph (Enhanced)
   openGraph?: {
     type?: "website" | "article" | "product" | "profile" | "music" | "video" | "book";
     url?: string;
@@ -148,15 +120,11 @@ export interface SEOptions {
     locale?: string;
     alternateLocale?: string[];
     siteName?: string;
-    // Article specific
     article?: ArticleMeta;
-    // Product specific
     product?: ProductMeta;
-    // Profile
     firstName?: string;
     lastName?: string;
     username?: string;
-    // Music
     music?: {
       album?: string;
       musician?: string;
@@ -167,7 +135,6 @@ export interface SEOptions {
     };
   };
 
-  // Twitter Card (Enhanced)
   twitter?: {
     cardType?: "summary" | "summary_large_image" | "app" | "player";
     site?: string;
@@ -200,33 +167,24 @@ export interface SEOptions {
     };
   };
 
-  // Structured Data
   jsonLd?: JsonLdTypes[];
 
-  // International SEO
   hreflang?: HreflangEntry[];
 
-  // Performance
   preload?: PreloadHint[];
   preconnect?: PreconnectOrigin[];
   dnsPrefetch?: DnsPrefetchDomain[];
 
-  // Breadcrumb
   breadcrumbs?: BreadcrumbItem[];
 
-  // Favicon
   favicon?: string;
   appleTouchIcon?: string;
   maskIcon?: string;
   themeColor?: string;
 
-  // Viewport
   viewport?: string;
 }
 
-// ============================================================================
-// Open Graph Image
-// ============================================================================
 
 export interface OpenGraphImage {
   url: string;
@@ -237,31 +195,23 @@ export interface OpenGraphImage {
   secureUrl?: string;
 }
 
-// ============================================================================
-// SEO Configuration
-// ============================================================================
 
 export interface SEOConfig {
-  // Site defaults
   defaultTitle?: string;
   titleTemplate?: string;
   defaultDescription?: string;
   defaultImage?: string;
   defaultCanonicalPrefix?: string;
 
-  // Site info
   siteName?: string;
   siteUrl?: string;
   twitterHandle?: string;
 
-  // Theme
   themeColor?: string;
 
-  // Favicon
   favicon?: string;
   appleTouchIcon?: string;
 
-  // i18n
   i18n?: {
     language?: string;
     t: (key: string) => string;
@@ -269,21 +219,15 @@ export interface SEOConfig {
   };
   defaultLanguage?: string;
 
-  // Robots
   defaultRobots?: RobotsMeta;
 
-  // Performance
   preconnectOrigins?: string[];
   dnsPrefetchDomains?: string[];
 
-  // Validation
   strictMode?: boolean;
   devWarnings?: boolean;
 }
 
-// ============================================================================
-// Validation Results
-// ============================================================================
 
 export interface SEOValidationResult {
   valid: boolean;
@@ -292,9 +236,6 @@ export interface SEOValidationResult {
   suggestions: string[];
 }
 
-// ============================================================================
-// Schema.org Types
-// ============================================================================
 
 export type SchemaType =
   | "Article"
@@ -313,5 +254,4 @@ export type SchemaType =
   | "Review"
   | "AggregateRating";
 
-// Re-export JsonLdTypes for convenience
 export type { JsonLdTypes } from "./schema.js";

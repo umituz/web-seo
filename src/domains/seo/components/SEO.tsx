@@ -1,10 +1,3 @@
-/**
- * `<SEO>` component.
- *
- * Applies SEO options to the document head on mount and whenever the
- * props change. The deep-compare gate prevents re-running the DOM
- * mutator when a parent re-renders with a structurally-equal object.
- */
 
 import { memo, useEffect, useRef } from "react";
 import { deepEqual } from "../core/deep-equal.js";

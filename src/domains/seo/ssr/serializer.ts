@@ -1,10 +1,3 @@
-/**
- * SEO Serializer
- *
- * JSON and base64 (de)serialization of SEO options for SSR/hydration.
- * Uses TextEncoder/TextDecoder for UTF-8 safety in the browser, and
- * Buffer in Node when available.
- */
 
 import type { SEOptions } from "../types/index.js";
 
@@ -43,10 +36,6 @@ export const serializeSEOToBase64 = (options: SEOptions): string =>
 export const deserializeSEOFromBase64 = (base64: string): SEOptions =>
   deserializeSEO(fromBase64(base64));
 
-/**
- * Safe deserialize: returns `null` instead of throwing on invalid input.
- * Use this when consuming data from an untrusted source (URL params, cookies).
- */
 export const safeDeserializeSEO = (data: string): SEOptions | null => {
   try {
     const parsed = JSON.parse(data);

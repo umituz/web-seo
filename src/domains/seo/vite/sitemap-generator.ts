@@ -1,6 +1,3 @@
-/**
- * Sitemap XML generation.
- */
 
 import * as fs from "fs";
 import * as path from "path";
@@ -38,10 +35,6 @@ ${urlElements}
 </urlset>`;
 };
 
-/**
- * Walk the build output and collect every directory that produced an
- * `index.html`. Each one becomes a sitemap entry.
- */
 export const discoverRoutesFromBuild = (outDir: string): string[] => {
   const routes = new Set<string>("/");
 

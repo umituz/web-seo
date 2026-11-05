@@ -1,10 +1,3 @@
-/**
- * `<JsonLd>` component.
- *
- * Injects one or more JSON-LD <script> tags into the document head.
- * Each payload gets a stable id (cyrb53 hash) so re-renders with the
- * same content re-use the existing node instead of appending a new one.
- */
 
 import { memo, useEffect, useMemo, useRef } from "react";
 import { deepEqual } from "../core/deep-equal.js";
@@ -13,9 +6,7 @@ import type { JsonLdTypes } from "../types/schema.js";
 
 interface JsonLdProps {
   data: JsonLdTypes | JsonLdTypes[];
-  /** Strategy label, attached as `data-seo-strategy` for debugging. */
   strategy?: "afterInteractive" | "beforeInteractive" | "idle";
-  /** Optional explicit id; otherwise one is derived from the payload. */
   id?: string;
 }
 

@@ -1,10 +1,3 @@
-/**
- * Schema generator factory.
- *
- * Lets callers dispatch on `@type` instead of remembering each generator
- * function name. Useful for plugins or frameworks that build schemas
- * dynamically from a config object.
- */
 
 import type { JsonLdTypes, SchemaGeneratorOptions } from "../../types/schema.js";
 import { generateArticleSchema } from "./generators/article.js";

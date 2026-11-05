@@ -1,6 +1,3 @@
-/**
- * robots.txt generation.
- */
 
 import type { ViteSEOPluginOptions } from "./types.js";
 

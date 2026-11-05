@@ -1,13 +1,6 @@
-/**
- * SEO Utils
- *
- * Public utility surface for SEO management.
- */
 
-// Core DOM operations
 export { updateSEO, clearSEO, getCurrentSEOState } from "./dom/index.js";
 
-// Schema generators
 export {
   generateArticleSchema,
   generateProductSchema,
@@ -20,7 +13,6 @@ export {
   generateVideoSchema,
 } from "./schema-generators/index.js";
 
-// Validators
 export {
   validateSEO,
   auditSEO,

@@ -1,9 +1,3 @@
-/**
- * Open Graph image validation.
- *
- * All four parameters are optional so callers can progressively validate
- * as soon as they know each value.
- */
 
 import {
   OG_IMAGE_MAX_SIZE,

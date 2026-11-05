@@ -1,9 +1,3 @@
-/**
- * Schema.org Generators
- *
- * Public surface for structured-data generation. One file per generator
- * (see ./generators/*) plus a factory for dynamic dispatch.
- */
 
 export { generateArticleSchema } from "./generators/article.js";
 export { generateProductSchema } from "./generators/product.js";

@@ -1,11 +1,3 @@
-/**
- * cyrb53 content hash with WeakMap memoization.
- *
- * Produces a stable, URL-safe id from any JSON-LD payload. Used by both
- * the JsonLd component and the useJsonLd hook to give each schema instance
- * a deterministic script-tag id, so the same payload re-uses the same <script>
- * node and the DOM stays clean.
- */
 
 const hashCache = new WeakMap<object, string>();
 

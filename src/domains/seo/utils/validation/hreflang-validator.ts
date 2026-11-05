@@ -1,6 +1,3 @@
-/**
- * Hreflang validation.
- */
 
 import { isValidLanguageCode } from "./language-code.js";
 import { validateUrl } from "./url-validator.js";

@@ -1,8 +1,3 @@
-/**
- * Convenience presets for common SEO setups.
- *
- * Each preset returns a fully-configured Vite plugin instance.
- */
 
 import { viteSEOPlugin } from "./plugin.js";
 import type { ViteSEOPluginOptions } from "./types.js";
@@ -44,5 +39,4 @@ export const quickSEOSetup = {
 
 export type QuickSetupKey = keyof typeof quickSEOSetup;
 
-/** Re-export so plugin.ts can satisfy Vite's plugin shape without a circular import. */
 export type { ViteSEOPluginOptions };
