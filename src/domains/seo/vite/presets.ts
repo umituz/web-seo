@@ -1,12 +1,47 @@
 
 import { viteSEOPlugin } from "./plugin.js";
-import type { ViteSEOPluginOptions } from "./types.js";
+import type { RouteMeta, SitemapRouteItem, ViteSEOPluginOptions } from "./types.js";
 
 const baseDisallow = ["/api", "/admin"];
 const blogDisallow = [...baseDisallow, "/private"];
 const ecommerceDisallow = [...baseDisallow, "/cart", "/checkout", "/account"];
+const saasDisallow = ["/api/", "/auth/"];
 
 const withRoutes = (routes?: string[]): string[] => ["/", ...(routes ?? [])];
+
+export interface SaasSEOOptions {
+  landing?: Array<string | SitemapRouteItem>;
+  prerender?: Record<string, RouteMeta>;
+  brand?: string;
+  image?: string;
+  disallow?: string[];
+}
+
+export const saasSEOOptions = (siteUrl: string, opts: SaasSEOOptions = {}): ViteSEOPluginOptions => ({
+  siteUrl,
+  routes: ["/", ...(opts.landing ?? [])],
+  sitemap: { filename: "sitemap.xml" },
+  robotsTxt: {
+    filename: "robots.txt",
+    allow: "/",
+    disallow: opts.disallow ?? saasDisallow,
+    sitemap: `${siteUrl}/sitemap.xml`,
+  },
+  prerender: {
+    fallbackMeta: {
+      ...(opts.brand || opts.image
+        ? {
+            og: {
+              ...(opts.brand ? { siteName: opts.brand } : {}),
+              ...(opts.image ? { image: opts.image } : {}),
+            },
+            ...(opts.image ? { twitter: { card: "summary_large_image", image: opts.image } } : {}),
+          }
+        : {}),
+    },
+    routes: opts.prerender ?? { "/": {} },
+  },
+});
 
 export const quickSEOSetup = {
   basic: (siteUrl: string, routes?: string[]) =>
@@ -35,6 +70,8 @@ export const quickSEOSetup = {
       sitemap: { changefreq: "hourly", priority: 1.0 },
       robotsTxt: { disallow: ecommerceDisallow, crawlDelay: 1 },
     }),
+
+  saas: (siteUrl: string, opts: SaasSEOOptions = {}) => viteSEOPlugin(saasSEOOptions(siteUrl, opts)),
 } as const;
 
 export type QuickSetupKey = keyof typeof quickSEOSetup;

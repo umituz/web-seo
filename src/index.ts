@@ -1,11 +1,15 @@
 
 export { SEO } from "./domains/seo/components/SEO.js";
 export { JsonLd } from "./domains/seo/components/JsonLd.js";
+export { RouteSEO } from "./domains/seo/components/RouteSEO.js";
+export type { RouteSEOProps } from "./domains/seo/components/RouteSEO.js";
 export { useSEO } from "./domains/seo/hooks/useSEO.js";
 export { useJsonLd } from "./domains/seo/hooks/useJsonLd.js";
 export { initSEO } from "./domains/seo/core/init.js";
 
 export { updateSEO, clearSEO, getCurrentSEOState } from "./domains/seo/utils/dom/index.js";
+
+export type { RouteMeta, SitemapRouteItem } from "./domains/seo/vite/types.js";
 
 export {
   generateArticleSchema,

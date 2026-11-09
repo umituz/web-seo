@@ -1,6 +1,7 @@
 export { viteSEOPlugin } from "./plugin.js";
 export { injectRouteMeta } from "./html-rewriter.js";
-export { quickSEOSetup } from "./presets.js";
+export { quickSEOSetup, saasSEOOptions } from "./presets.js";
+export type { SaasSEOOptions } from "./presets.js";
 export type {
   ViteSEOPluginOptions,
   SitemapRouteItem,
