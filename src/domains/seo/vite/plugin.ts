@@ -110,6 +110,8 @@ export const viteSEOPlugin = (options: ViteSEOPluginOptions): Plugin => {
               }
               const targetFile = path.resolve(targetDir, "index.html");
               fs.writeFileSync(targetFile, renderedHtml, "utf-8");
+              const directHtmlFile = path.resolve(outDir, `${cleanPath}.html`);
+              fs.writeFileSync(directHtmlFile, renderedHtml, "utf-8");
               generatedHtmlPages.push(`${cleanPath}/index.html`);
             }
           }
