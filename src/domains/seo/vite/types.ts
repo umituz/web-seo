@@ -38,6 +38,7 @@ export interface RouteMeta {
     creator?: string;
   };
   jsonLd?: Record<string, unknown> | Array<Record<string, unknown>>;
+  bodyHtml?: string;
 }
 
 export interface PrerenderOptions {

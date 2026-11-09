@@ -41,6 +41,35 @@ const upsertMetaTag = (
   return upsertTag(html, regex, newTag);
 };
 
+const replaceRootContent = (html: string, newContent: string): string => {
+  const rootMatch = html.match(/<div\s+[^>]*?id=["']root["'][^>]*>/i);
+  if (!rootMatch || rootMatch.index === undefined) return html;
+
+  const startIdx = rootMatch.index + rootMatch[0].length;
+  let depth = 1;
+  let pos = startIdx;
+
+  while (pos < html.length && depth > 0) {
+    const nextOpen = html.indexOf("<div", pos);
+    const nextClose = html.indexOf("</div>", pos);
+
+    if (nextClose === -1) break;
+
+    if (nextOpen !== -1 && nextOpen < nextClose) {
+      depth++;
+      pos = nextOpen + 4;
+    } else {
+      depth--;
+      if (depth === 0) {
+        return `${html.slice(0, startIdx)}\n${newContent}\n    ${html.slice(nextClose)}`;
+      }
+      pos = nextClose + 6;
+    }
+  }
+
+  return html;
+};
+
 export const injectRouteMeta = (
   htmlTemplate: string,
   meta: RouteMeta,
@@ -141,6 +170,10 @@ export const injectRouteMeta = (
     const jsonLdTag = `<script type="application/ld+json" data-seo="true">\n${jsonString}\n    </script>`;
     const existingJsonLdRegex = /<script\s+[^>]*?type=["']application\/ld\+json["'][^>]*>[\s\S]*?<\/script>/i;
     html = upsertTag(html, existingJsonLdRegex, jsonLdTag);
+  }
+
+  if (meta.bodyHtml) {
+    html = replaceRootContent(html, meta.bodyHtml);
   }
 
   return html;
