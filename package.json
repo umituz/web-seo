@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "version:minor": "npm version minor -m 'chore: release v%s'"
   },
   "exports": {
     ".": {
