@@ -37,7 +37,7 @@ export const useJsonLd = (
         const script = document.createElement("script");
         script.type = SCRIPT_TYPE;
         script.textContent = JSON.stringify(item);
-        script.setAttribute("data-seo-id", ids[index]);
+        script.setAttribute("data-seo-id", ids[index] ?? "");
         script.setAttribute("data-seo-strategy", strategy);
         document.head.appendChild(script);
       });

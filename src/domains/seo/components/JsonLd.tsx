@@ -34,7 +34,7 @@ const JsonLdComponent = ({ data, strategy = "afterInteractive", id }: JsonLdProp
       const script = document.createElement("script");
       script.type = SCRIPT_TYPE;
       script.textContent = JSON.stringify(items[index]);
-      script.setAttribute("data-seo-id", dataIds[index]);
+      script.setAttribute("data-seo-id", dataIds[index] ?? "");
       script.setAttribute("data-seo-strategy", strategy);
       document.head.appendChild(script);
 

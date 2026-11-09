@@ -88,7 +88,7 @@ export const injectRouteMeta = (
     const htmlTagRegex = /<html([^>]*)>/i;
     const match = html.match(htmlTagRegex);
     if (match) {
-      let attrs = match[1];
+      let attrs = match[1] ?? "";
       if (/lang=["'][^"']*["']/i.test(attrs)) {
         attrs = attrs.replace(/lang=["'][^"']*["']/i, `lang="${escapeHtml(meta.lang)}"`);
       } else {

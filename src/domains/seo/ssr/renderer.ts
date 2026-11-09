@@ -26,7 +26,7 @@ const joinTags = (ctx: HTMLContext): { meta: string; link: string; jsonLd: strin
 
 const findTitle = (meta: string): string => {
   const match = meta.match(/<title>([\s\S]*?)<\/title>/);
-  return match ? match[1] : "";
+  return match ? match[1] ?? "" : "";
 };
 
 const stripTitle = (meta: string): string =>
