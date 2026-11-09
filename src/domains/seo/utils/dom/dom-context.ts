@@ -47,5 +47,21 @@ export const createDOMContext = (): DOMContext => {
     }
   };
 
-  return { setMeta, setLink };
+  const setJsonLd = (data: unknown[]): void => {
+    if (typeof document === "undefined") return;
+
+    document
+      .querySelectorAll('script[type="application/ld+json"][data-seo="true"]')
+      .forEach((el) => el.remove());
+
+    for (const item of data) {
+      const script = document.createElement("script");
+      script.type = "application/ld+json";
+      script.setAttribute("data-seo", "true");
+      script.textContent = JSON.stringify(item);
+      document.head.appendChild(script);
+    }
+  };
+
+  return { setMeta, setLink, setJsonLd };
 };

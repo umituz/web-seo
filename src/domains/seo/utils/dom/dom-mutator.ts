@@ -25,6 +25,7 @@ export const clearSEO = (): void => {
 
   document.querySelectorAll('meta[data-seo="true"]').forEach((el) => el.remove());
   document.querySelectorAll('link[data-seo="true"]').forEach((el) => el.remove());
+  document.querySelectorAll('script[type="application/ld+json"][data-seo="true"]').forEach((el) => el.remove());
   document.title = "";
 };
 

@@ -555,7 +555,9 @@ export const twitterStrategy: Strategy = {
 export const jsonLdStrategy: Strategy = {
   id: "json-ld",
   applies: (o) => Boolean(o.jsonLd && o.jsonLd.length > 0),
-  applyDOM: () => {
+  applyDOM: (o, ctx) => {
+    if (!o.jsonLd) return;
+    ctx.setJsonLd(o.jsonLd);
   },
   applyHTML: (o, ctx) => {
     if (!o.jsonLd) return;

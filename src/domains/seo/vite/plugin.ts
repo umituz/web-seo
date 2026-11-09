@@ -34,19 +34,32 @@ export const viteSEOPlugin = (options: ViteSEOPluginOptions): Plugin => {
     generateBundle() {
       const outDir = pluginState.outDir ?? "dist";
 
-      let routes = [...manualRoutes];
+      const routes: Array<string | import("./types.js").SitemapRouteItem> = [...manualRoutes];
       if (discoverRoutes) {
         const discovered = discoverRoutesFromBuild(outDir);
-        routes = Array.from(new Set([...routes, ...discovered]));
+        for (const item of discovered) {
+          const alreadyExists = routes.some((r) => (typeof r === "string" ? r === item : r.url === item));
+          if (!alreadyExists) routes.push(item);
+        }
       }
       if (routes.length === 0) routes.push("/");
 
-      const sitemapUrls: SitemapURL[] = routes.map((route) => ({
-        loc: `${normalizedSiteUrl}${route}`,
-        lastmod: sitemapOptions.lastmod,
-        changefreq: sitemapOptions.changefreq,
-        priority: sitemapOptions.priority,
-      }));
+      const sitemapUrls: SitemapURL[] = routes.map((entry) => {
+        if (typeof entry === "string") {
+          return {
+            loc: `${normalizedSiteUrl}${entry}`,
+            lastmod: sitemapOptions.lastmod,
+            changefreq: sitemapOptions.changefreq,
+            priority: sitemapOptions.priority,
+          };
+        }
+        return {
+          loc: `${normalizedSiteUrl}${entry.url}`,
+          lastmod: entry.lastmod ?? sitemapOptions.lastmod,
+          changefreq: entry.changefreq ?? sitemapOptions.changefreq,
+          priority: entry.priority ?? sitemapOptions.priority,
+        };
+      });
 
       this.emitFile({
         type: "asset",

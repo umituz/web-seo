@@ -1,11 +1,27 @@
 
+export type SitemapChangeFreq =
+  | "always"
+  | "hourly"
+  | "daily"
+  | "weekly"
+  | "monthly"
+  | "yearly"
+  | "never";
+
+export interface SitemapRouteItem {
+  url: string;
+  priority?: number;
+  changefreq?: SitemapChangeFreq;
+  lastmod?: string;
+}
+
 export interface ViteSEOPluginOptions {
   siteUrl: string;
-  routes?: string[];
+  routes?: Array<string | SitemapRouteItem>;
   discoverRoutes?: boolean;
   sitemap?: {
     filename?: string;
-    changefreq?: "always" | "hourly" | "daily" | "weekly" | "monthly" | "yearly" | "never";
+    changefreq?: SitemapChangeFreq;
     priority?: number;
     lastmod?: string;
   };

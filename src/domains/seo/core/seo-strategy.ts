@@ -4,6 +4,7 @@ import type { SEOptions } from "../types/index.js";
 export interface DOMContext {
   setMeta: (name: string, content: string | undefined) => void;
   setLink: (attrs: Record<string, string>) => void;
+  setJsonLd: (data: unknown[]) => void;
 }
 
 export interface HTMLContext {

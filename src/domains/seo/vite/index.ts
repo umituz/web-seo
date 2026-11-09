@@ -1,4 +1,4 @@
 
 export { viteSEOPlugin } from "./plugin.js";
 export { quickSEOSetup } from "./presets.js";
-export type { ViteSEOPluginOptions } from "./types.js";
+export type { ViteSEOPluginOptions, SitemapRouteItem, SitemapChangeFreq } from "./types.js";
