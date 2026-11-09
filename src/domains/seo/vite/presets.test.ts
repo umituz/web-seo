@@ -37,4 +37,23 @@ describe('saasSEOOptions', () => {
     const options = saasSEOOptions('https://demo.test.dev', { prerender: {} });
     expect(options.prerender?.fallbackMeta).toEqual({});
   });
+
+  it('derives sitemap routes from the prerender map when landing is absent', () => {
+    const options = saasSEOOptions('https://demo.test.dev', {
+      prerender: {
+        '/': { title: 'Home' },
+        '/features': { title: 'Features' },
+        '/about': { title: 'About' },
+      },
+    });
+    expect(options.routes).toEqual(['/', '/features', '/about']);
+  });
+
+  it('prefers explicit landing routes over the prerender map', () => {
+    const options = saasSEOOptions('https://demo.test.dev', {
+      landing: ['/pricing'],
+      prerender: { '/': {}, '/features': {} },
+    });
+    expect(options.routes).toEqual(['/', '/pricing']);
+  });
 });

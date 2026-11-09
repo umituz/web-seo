@@ -19,7 +19,10 @@ export interface SaasSEOOptions {
 
 export const saasSEOOptions = (siteUrl: string, opts: SaasSEOOptions = {}): ViteSEOPluginOptions => ({
   siteUrl,
-  routes: ["/", ...(opts.landing ?? [])],
+  routes: [
+    "/",
+    ...(opts.landing ?? Object.keys(opts.prerender ?? { "/": {} }).filter((r) => r !== "/")),
+  ],
   sitemap: { filename: "sitemap.xml" },
   robotsTxt: {
     filename: "robots.txt",
