@@ -9,7 +9,7 @@ export { initSEO } from "./domains/seo/core/init.js";
 
 export { updateSEO, clearSEO, getCurrentSEOState } from "./domains/seo/utils/dom/index.js";
 
-export type { RouteMeta, SitemapRouteItem } from "./domains/seo/vite/types.js";
+export type { RouteMeta, SitemapRouteItem, HreflangAlternate } from "./domains/seo/vite/types.js";
 
 export {
   generateArticleSchema,
