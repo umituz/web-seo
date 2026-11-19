@@ -14,6 +14,11 @@ export interface SitemapRouteItem {
   lastmod?: string;
 }
 
+export interface HreflangAlternate {
+  lang: string;
+  href: string;
+}
+
 export interface RouteMeta {
   title?: string;
   description?: string;
@@ -21,6 +26,7 @@ export interface RouteMeta {
   canonical?: string;
   robots?: string;
   lang?: string;
+  alternates?: HreflangAlternate[];
   og?: {
     title?: string;
     description?: string;
@@ -28,6 +34,7 @@ export interface RouteMeta {
     type?: string;
     url?: string;
     siteName?: string;
+    locale?: string;
   };
   twitter?: {
     card?: string;

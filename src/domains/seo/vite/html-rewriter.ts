@@ -125,6 +125,23 @@ export const injectRouteMeta = (
   const newCanonical = `<link rel="canonical" href="${escapeHtml(canonicalUrl)}" />`;
   html = upsertTag(html, canonicalRegex, newCanonical);
 
+  if (meta.alternates && meta.alternates.length > 0) {
+    html = html.replace(
+      /<link\s+[^>]*?rel=["']alternate["'][^>]*?hreflang=[^>]*?\/?>/gi,
+      ""
+    );
+    const alternateTags = meta.alternates
+      .map(
+        (entry) =>
+          `<link rel="alternate" hreflang="${escapeHtml(entry.lang)}" href="${escapeHtml(entry.href)}" />`
+      )
+      .join("\n    ");
+    const headClosingIndex = html.toLowerCase().indexOf("</head>");
+    if (headClosingIndex !== -1) {
+      html = `${html.slice(0, headClosingIndex)}    ${alternateTags}\n  ${html.slice(headClosingIndex)}`;
+    }
+  }
+
   const ogTitle = meta.og?.title ?? meta.title;
   if (ogTitle) html = upsertMetaTag(html, "property", "og:title", ogTitle);
 
@@ -139,6 +156,10 @@ export const injectRouteMeta = (
 
   if (meta.og?.siteName) {
     html = upsertMetaTag(html, "property", "og:site_name", meta.og.siteName);
+  }
+
+  if (meta.og?.locale) {
+    html = upsertMetaTag(html, "property", "og:locale", meta.og.locale);
   }
 
   if (meta.og?.image) {
