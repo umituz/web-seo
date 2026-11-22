@@ -129,3 +129,31 @@ export interface CourseSchemaInput {
   aggregateRating?: { ratingValue: number; reviewCount: number };
   instances?: CourseInstanceInput[];
 }
+
+export interface SoftwareApplicationSchemaInput {
+  name: string;
+  url?: string;
+  description?: string;
+  image?: string | string[];
+  applicationCategory?: string;
+  operatingSystem?: string;
+  price?: string | number;
+  priceCurrency?: string;
+  offers?: {
+    "@type": "Offer";
+    price: string;
+    priceCurrency: string;
+    url?: string;
+  };
+  aggregateRating?: {
+    ratingValue: number;
+    reviewCount: number;
+    bestRating?: number;
+    worstRating?: number;
+  };
+  featureList?: string[];
+  screenshot?: string | string[];
+  softwareVersion?: string;
+  browserRequirements?: string;
+  type?: "SoftwareApplication" | "WebApplication";
+}

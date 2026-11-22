@@ -19,6 +19,8 @@ import { generateWebSiteSchema } from "./generators/website.js";
 import type { WebSiteSchemaInput } from "./types.js";
 import { generateCourseSchema } from "./generators/course.js";
 import type { CourseSchemaInput } from "./types.js";
+import { generateSoftwareApplicationSchema } from "./generators/software-application.js";
+import type { SoftwareApplicationSchemaInput } from "./types.js";
 
 export type SchemaKind =
   | "Article"
@@ -32,7 +34,9 @@ export type SchemaKind =
   | "WebSite"
   | "Person"
   | "VideoObject"
-  | "Course";
+  | "Course"
+  | "SoftwareApplication"
+  | "WebApplication";
 
 type GeneratorInput<K extends SchemaKind> =
   K extends "Article" | "NewsArticle" | "BlogPosting" ? ArticleSchemaInput :
@@ -45,6 +49,7 @@ type GeneratorInput<K extends SchemaKind> =
   K extends "VideoObject" ? VideoSchemaInput :
   K extends "BreadcrumbList" ? Array<{ name: string; item: string; position?: number }> :
   K extends "Course" ? CourseSchemaInput :
+  K extends "SoftwareApplication" | "WebApplication" ? SoftwareApplicationSchemaInput :
   never;
 
 export const schemaFactory = {
@@ -62,6 +67,12 @@ export const schemaFactory = {
         return generateProductSchema(input as ProductSchemaInput, options);
       case "Course":
         return generateCourseSchema(input as CourseSchemaInput, options);
+      case "SoftwareApplication":
+      case "WebApplication":
+        return generateSoftwareApplicationSchema(
+          { ...(input as SoftwareApplicationSchemaInput), type: kind },
+          options
+        );
       case "Organization":
         return generateOrganizationSchema(input as OrganizationSchemaInput, options);
       case "LocalBusiness":

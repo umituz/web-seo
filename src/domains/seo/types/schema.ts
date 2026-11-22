@@ -260,6 +260,17 @@ export interface CourseJsonLd extends Thing {
   review?: Review[];
 }
 
+export interface SoftwareApplicationJsonLd extends Thing {
+  "@type": "SoftwareApplication" | "WebApplication";
+  applicationCategory?: string;
+  operatingSystem?: string;
+  offers?: Offer | Offer[];
+  aggregateRating?: AggregateRating;
+  featureList?: string | string[];
+  screenshot?: string | string[];
+  softwareVersion?: string;
+  browserRequirements?: string;
+}
 
 export type JsonLdTypes =
   | ArticleJsonLd
@@ -273,7 +284,8 @@ export type JsonLdTypes =
   | VideoJsonLd
   | AudioJsonLd
   | BookJsonLd
-  | CourseJsonLd;
+  | CourseJsonLd
+  | SoftwareApplicationJsonLd;
 
 export type SchemaType = JsonLdTypes["@type"];
 

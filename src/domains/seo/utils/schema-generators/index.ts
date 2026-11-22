@@ -9,6 +9,7 @@ export { generateWebSiteSchema } from "./generators/website.js";
 export { generatePersonSchema } from "./generators/person.js";
 export { generateVideoSchema } from "./generators/video.js";
 export { generateCourseSchema } from "./generators/course.js";
+export { generateSoftwareApplicationSchema } from "./generators/software-application.js";
 
 export { schemaFactory } from "./factory.js";
 export type { SchemaKind } from "./factory.js";
@@ -24,6 +25,7 @@ export type {
   VideoSchemaInput,
   CourseSchemaInput,
   CourseInstanceInput,
+  SoftwareApplicationSchemaInput,
   ContactPointInput,
   PostalAddressInput,
 } from "./types.js";

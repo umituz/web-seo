@@ -22,6 +22,7 @@ export {
   generatePersonSchema,
   generateVideoSchema,
   generateCourseSchema,
+  generateSoftwareApplicationSchema,
   schemaFactory,
 } from "./domains/seo/utils/schema-generators/index.js";
 
@@ -90,6 +91,7 @@ export type {
   VideoJsonLd,
   CourseJsonLd,
   CourseInstance,
+  SoftwareApplicationJsonLd,
   SchemaType,
   SchemaGeneratorOptions,
 } from "./domains/seo/types/schema.js";
@@ -105,6 +107,7 @@ export type {
   VideoSchemaInput,
   CourseSchemaInput,
   CourseInstanceInput,
+  SoftwareApplicationSchemaInput,
 } from "./domains/seo/utils/schema-generators/types.js";
 
 export type { SchemaKind } from "./domains/seo/utils/schema-generators/factory.js";
