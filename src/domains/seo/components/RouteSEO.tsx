@@ -3,17 +3,13 @@ import { memo, useMemo } from "react";
 import { useSEO } from "../hooks/index.js";
 import type { SEOptions } from "../types/index.js";
 import type { RouteMeta } from "../vite/types.js";
+import { matchRoute, normalizeRoutePath } from "../utils/route-pattern.js";
 
 export interface RouteSEOProps {
   routes: Record<string, RouteMeta>;
   siteUrl?: string;
   fallback?: RouteMeta;
 }
-
-const normalizePath = (path: string): string => {
-  const stripped = path.replace(/\/+$/, "");
-  return stripped === "" ? "/" : stripped;
-};
 
 const toOpenGraph = (
   meta: RouteMeta,
@@ -46,8 +42,8 @@ const toTwitter = (meta: RouteMeta): SEOptions["twitter"] => {
 };
 
 const RouteSEOComponent = ({ routes, siteUrl, fallback }: RouteSEOProps) => {
-  const path = typeof window === "undefined" ? "/" : normalizePath(window.location.pathname);
-  const meta = routes[path];
+  const path = typeof window === "undefined" ? "/" : normalizeRoutePath(window.location.pathname);
+  const meta = useMemo(() => matchRoute(routes, path)?.meta, [routes, path]);
 
   const options = useMemo<SEOptions>(() => {
     if (meta) {

@@ -1,6 +1,7 @@
 
 import { viteSEOPlugin } from "./plugin.js";
-import type { RouteMeta, SitemapRouteItem, ViteSEOPluginOptions } from "./types.js";
+import { isRoutePattern } from "../utils/route-pattern.js";
+import type { DynamicRouteSource, RouteMeta, SitemapRouteItem, ViteSEOPluginOptions } from "./types.js";
 
 const baseDisallow = ["/api", "/admin"];
 const blogDisallow = [...baseDisallow, "/private"];
@@ -11,6 +12,7 @@ const withRoutes = (routes?: string[]): string[] => ["/", ...(routes ?? [])];
 
 export interface SaasSEOOptions {
   landing?: Array<string | SitemapRouteItem>;
+  dynamicRoutes?: DynamicRouteSource;
   prerender?: Record<string, RouteMeta>;
   brand?: string;
   image?: string;
@@ -19,9 +21,10 @@ export interface SaasSEOOptions {
 
 export const saasSEOOptions = (siteUrl: string, opts: SaasSEOOptions = {}): ViteSEOPluginOptions => ({
   siteUrl,
+  dynamicRoutes: opts.dynamicRoutes,
   routes: [
     "/",
-    ...(opts.landing ?? Object.keys(opts.prerender ?? { "/": {} }).filter((r) => r !== "/")),
+    ...(opts.landing ?? Object.keys(opts.prerender ?? { "/": {} }).filter((r) => r !== "/" && !isRoutePattern(r))),
   ],
   sitemap: { filename: "sitemap.xml" },
   robotsTxt: {
@@ -42,7 +45,9 @@ export const saasSEOOptions = (siteUrl: string, opts: SaasSEOOptions = {}): Vite
           }
         : {}),
     },
-    routes: opts.prerender ?? { "/": {} },
+    routes: opts.prerender
+      ? Object.fromEntries(Object.entries(opts.prerender).filter(([routePath]) => !isRoutePattern(routePath)))
+      : { "/": {} },
   },
 });
 

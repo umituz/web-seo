@@ -320,15 +320,28 @@ Vite plugin for build-time SEO optimization.
 **Options:**
 - `siteUrl`: `string` - Base URL of your site
 - `routes?`: `string[]` - Routes to include in sitemap
+- `dynamicRoutes?`: `Array<string | SitemapRouteItem> | (() => ... | Promise<...>)` - Concrete URLs for parametric routes, resolved at build time and merged into the sitemap (route patterns like `/u/:slug` are skipped from the sitemap itself)
 - `discoverRoutes?`: `boolean` - Auto-discover routes
 - `sitemap?`: `object` - Sitemap configuration
 - `robotsTxt?`: `object` - robots.txt configuration
+
+#### Parametric Route Patterns
+
+Route maps may include pattern keys with `:param` segments (e.g. `/u/:slug`). `RouteSEO` matches the live path against exact keys first, then patterns (most static segments win), so concrete parametric pages get `index,follow` with their own concrete canonical instead of the noindex fallback. Pattern keys never leak into the sitemap or the prerender output — supply their concrete URLs via `dynamicRoutes`:
+
+```typescript
+quickSEOSetup.saas('https://app.example.dev', {
+  prerender: { '/': { title: 'Home' }, '/u/:slug': { title: 'Profile' } },
+  dynamicRoutes: () => CATALOG.users.map((user) => ({ url: `/u/${user.slug}`, priority: 0.6 })),
+});
+```
 
 #### `quickSEOSetup`
 Convenience presets:
 - `quickSEOSetup.basic(siteUrl, routes?)`
 - `quickSEOSetup.blog(siteUrl, routes?)`
 - `quickSEOSetup.ecommerce(siteUrl, routes?)`
+- `quickSEOSetup.saas(siteUrl, opts?)` — accepts `landing`, `dynamicRoutes`, `prerender` (pattern keys filtered), `brand`, `image`, `disallow`
 
 ## Type Definitions
 

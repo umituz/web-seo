@@ -69,4 +69,38 @@ describe('RouteSEO', () => {
     expect(document.title).toBe('Pricing — Demo');
     expect(robotsContent()).not.toMatch(/noindex/);
   });
+
+  it('indexes a concrete path that matches a param route pattern', async () => {
+    window.history.replaceState({}, '', '/u/ada');
+    await render(
+      <RouteSEO
+        routes={{ ...ROUTES, '/u/:slug': { title: 'Creator profile' } }}
+        siteUrl="https://demo.test.dev"
+      />,
+    );
+    expect(document.title).toBe('Creator profile');
+    expect(robotsContent()).not.toMatch(/noindex/);
+    expect(
+      document.querySelector('link[rel="canonical"]')?.getAttribute('href'),
+    ).toBe('https://demo.test.dev/u/ada');
+  });
+
+  it('prefers the exact route over a matching pattern', async () => {
+    window.history.replaceState({}, '', '/u/featured');
+    await render(
+      <RouteSEO
+        routes={{ ...ROUTES, '/u/featured': { title: 'Featured — Demo' }, '/u/:slug': { title: 'Creator profile' } }}
+        siteUrl="https://demo.test.dev"
+      />,
+    );
+    expect(document.title).toBe('Featured — Demo');
+  });
+
+  it('noindexes a param pattern page when only another pattern family matches', async () => {
+    window.history.replaceState({}, '', '/stories/scifi/dune');
+    await render(
+      <RouteSEO routes={{ ...ROUTES, '/u/:slug': { title: 'Creator profile' } }} siteUrl="https://demo.test.dev" />,
+    );
+    expect(robotsContent()).toMatch(/noindex/);
+  });
 });

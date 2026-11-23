@@ -29,6 +29,17 @@ export const createDOMContext = (): DOMContext => {
     const rel = attrs.rel;
     if (!rel) return;
 
+    if (rel === "canonical") {
+      document.querySelectorAll(`link[rel="${rel}"]`).forEach((element) => element.remove());
+      const canonical = document.createElement("link");
+      canonical.setAttribute("data-seo", "true");
+      document.head.appendChild(canonical);
+      for (const [key, value] of Object.entries(attrs)) {
+        canonical.setAttribute(key, value);
+      }
+      return;
+    }
+
     const parts = [`link[rel="${rel}"]`];
     if (attrs.href)     parts.push(`[href="${attrs.href}"]`);
     if (attrs.sizes)    parts.push(`[sizes="${attrs.sizes}"]`);

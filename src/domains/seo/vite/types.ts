@@ -53,9 +53,14 @@ export interface PrerenderOptions {
   fallbackMeta?: RouteMeta;
 }
 
+export type DynamicRouteSource =
+  | Array<string | SitemapRouteItem>
+  | (() => Array<string | SitemapRouteItem> | Promise<Array<string | SitemapRouteItem>>);
+
 export interface ViteSEOPluginOptions {
   siteUrl: string;
   routes?: Array<string | SitemapRouteItem>;
+  dynamicRoutes?: DynamicRouteSource;
   discoverRoutes?: boolean;
   sitemap?: {
     filename?: string;

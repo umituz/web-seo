@@ -56,4 +56,27 @@ describe('saasSEOOptions', () => {
     });
     expect(options.routes).toEqual(['/', '/pricing']);
   });
+
+  it('keeps route patterns out of the sitemap and the prerender output', () => {
+    const options = saasSEOOptions('https://demo.test.dev', {
+      prerender: {
+        '/': { title: 'Home' },
+        '/features': { title: 'Features' },
+        '/u/:slug': { title: 'Creator profile' },
+      },
+    });
+    expect(options.routes).toEqual(['/', '/features']);
+    expect(Object.keys(options.prerender?.routes ?? {})).toEqual(['/', '/features']);
+  });
+
+  it('passes the dynamic route source through for concrete param URLs', () => {
+    const dynamicRoutes = () => [{ url: '/u/ada', priority: 0.7 }, '/u/alan'];
+    const options = saasSEOOptions('https://demo.test.dev', {
+      prerender: { '/': {}, '/u/:slug': { title: 'Creator profile' } },
+      dynamicRoutes,
+    });
+    expect(options.dynamicRoutes).toBe(dynamicRoutes);
+    expect(options.routes).toEqual(['/']);
+    expect(Object.keys(options.prerender?.routes ?? {})).toEqual(['/']);
+  });
 });
