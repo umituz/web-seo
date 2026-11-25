@@ -272,6 +272,33 @@ export interface SoftwareApplicationJsonLd extends Thing {
   browserRequirements?: string;
 }
 
+export interface EducationalOrganizationJsonLd extends Thing {
+  "@type": "EducationalOrganization" | "School" | "CollegeOrUniversity" | "HighSchool" | "MiddleSchool" | "ElementarySchool" | "Preschool";
+  logo?: string;
+  image?: string;
+  address?: PostalAddress;
+  telephone?: string;
+  email?: string;
+  sameAs?: string[];
+  numberOfStudents?: number;
+}
+
+export interface ListItemJsonLd {
+  "@type": "ListItem";
+  position: number;
+  name: string;
+  url?: string;
+  description?: string;
+  image?: string;
+}
+
+export interface ItemListJsonLd extends Thing {
+  "@type": "ItemList";
+  itemListOrder?: "Ascending" | "Descending" | "Unordered" | string;
+  numberOfItems?: number;
+  itemListElement: ListItemJsonLd[];
+}
+
 export type JsonLdTypes =
   | ArticleJsonLd
   | ProductJsonLd
@@ -285,7 +312,10 @@ export type JsonLdTypes =
   | AudioJsonLd
   | BookJsonLd
   | CourseJsonLd
-  | SoftwareApplicationJsonLd;
+  | SoftwareApplicationJsonLd
+  | EducationalOrganizationJsonLd
+  | ItemListJsonLd;
+
 
 export type SchemaType = JsonLdTypes["@type"];
 

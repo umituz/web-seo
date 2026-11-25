@@ -10,6 +10,8 @@ export { generatePersonSchema } from "./generators/person.js";
 export { generateVideoSchema } from "./generators/video.js";
 export { generateCourseSchema } from "./generators/course.js";
 export { generateSoftwareApplicationSchema } from "./generators/software-application.js";
+export { generateEducationalOrganizationSchema } from "./generators/educational-organization.js";
+export { generateItemListSchema } from "./generators/item-list.js";
 
 export { schemaFactory } from "./factory.js";
 export type { SchemaKind } from "./factory.js";
@@ -26,6 +28,10 @@ export type {
   CourseSchemaInput,
   CourseInstanceInput,
   SoftwareApplicationSchemaInput,
+  EducationalOrganizationSchemaInput,
+  ItemListSchemaInput,
+  ItemListElementInput,
   ContactPointInput,
   PostalAddressInput,
 } from "./types.js";
+

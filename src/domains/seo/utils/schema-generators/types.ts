@@ -157,3 +157,34 @@ export interface SoftwareApplicationSchemaInput {
   browserRequirements?: string;
   type?: "SoftwareApplication" | "WebApplication";
 }
+
+export interface EducationalOrganizationSchemaInput {
+  name: string;
+  url: string;
+  type?: "EducationalOrganization" | "School" | "CollegeOrUniversity" | "HighSchool" | "MiddleSchool" | "ElementarySchool" | "Preschool";
+  description?: string;
+  logo?: string;
+  image?: string;
+  address?: PostalAddressInput;
+  telephone?: string;
+  email?: string;
+  sameAs?: string[];
+  numberOfStudents?: number;
+}
+
+export interface ItemListElementInput {
+  name: string;
+  url?: string;
+  description?: string;
+  image?: string;
+  position?: number;
+}
+
+export interface ItemListSchemaInput {
+  name?: string;
+  description?: string;
+  itemListOrder?: "Ascending" | "Descending" | "Unordered" | string;
+  numberOfItems?: number;
+  itemListElement: ItemListElementInput[];
+}
+

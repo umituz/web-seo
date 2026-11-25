@@ -21,6 +21,10 @@ import { generateCourseSchema } from "./generators/course.js";
 import type { CourseSchemaInput } from "./types.js";
 import { generateSoftwareApplicationSchema } from "./generators/software-application.js";
 import type { SoftwareApplicationSchemaInput } from "./types.js";
+import { generateEducationalOrganizationSchema } from "./generators/educational-organization.js";
+import type { EducationalOrganizationSchemaInput } from "./types.js";
+import { generateItemListSchema } from "./generators/item-list.js";
+import type { ItemListSchemaInput } from "./types.js";
 
 export type SchemaKind =
   | "Article"
@@ -36,7 +40,10 @@ export type SchemaKind =
   | "VideoObject"
   | "Course"
   | "SoftwareApplication"
-  | "WebApplication";
+  | "WebApplication"
+  | "EducationalOrganization"
+  | "School"
+  | "ItemList";
 
 type GeneratorInput<K extends SchemaKind> =
   K extends "Article" | "NewsArticle" | "BlogPosting" ? ArticleSchemaInput :
@@ -50,6 +57,8 @@ type GeneratorInput<K extends SchemaKind> =
   K extends "BreadcrumbList" ? Array<{ name: string; item: string; position?: number }> :
   K extends "Course" ? CourseSchemaInput :
   K extends "SoftwareApplication" | "WebApplication" ? SoftwareApplicationSchemaInput :
+  K extends "EducationalOrganization" | "School" ? EducationalOrganizationSchemaInput :
+  K extends "ItemList" ? ItemListSchemaInput :
   never;
 
 export const schemaFactory = {
@@ -90,6 +99,14 @@ export const schemaFactory = {
         return generatePersonSchema(input as PersonSchemaInput, options);
       case "VideoObject":
         return generateVideoSchema(input as VideoSchemaInput, options);
+      case "EducationalOrganization":
+      case "School":
+        return generateEducationalOrganizationSchema(
+          { ...(input as EducationalOrganizationSchemaInput), type: kind },
+          options
+        );
+      case "ItemList":
+        return generateItemListSchema(input as ItemListSchemaInput, options);
       default: {
         const _exhaustive: never = kind;
         throw new Error(`[SEO] Unknown schema kind: ${String(_exhaustive)}`);
@@ -97,3 +114,4 @@ export const schemaFactory = {
     }
   },
 };
+

@@ -23,8 +23,11 @@ export {
   generateVideoSchema,
   generateCourseSchema,
   generateSoftwareApplicationSchema,
+  generateEducationalOrganizationSchema,
+  generateItemListSchema,
   schemaFactory,
 } from "./domains/seo/utils/schema-generators/index.js";
+
 
 export {
   validateSEO,
@@ -92,6 +95,9 @@ export type {
   CourseJsonLd,
   CourseInstance,
   SoftwareApplicationJsonLd,
+  EducationalOrganizationJsonLd,
+  ItemListJsonLd,
+  ListItemJsonLd,
   SchemaType,
   SchemaGeneratorOptions,
 } from "./domains/seo/types/schema.js";
@@ -108,6 +114,10 @@ export type {
   CourseSchemaInput,
   CourseInstanceInput,
   SoftwareApplicationSchemaInput,
+  EducationalOrganizationSchemaInput,
+  ItemListSchemaInput,
+  ItemListElementInput,
 } from "./domains/seo/utils/schema-generators/types.js";
+
 
 export type { SchemaKind } from "./domains/seo/utils/schema-generators/factory.js";
